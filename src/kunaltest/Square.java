@@ -7,7 +7,8 @@ import java.util.List;
 
 public class Square{
 
-	int x, y, width;
+	int x, y;
+	int width = 30; // TODO: Change this hardcoded stuff
 	List<Square> adjacent;
 	boolean wall = false;
 	
@@ -15,10 +16,9 @@ public class Square{
 	boolean start = false;
 	
 	
-	public Square(int x, int y, int width){
+	public Square(int x, int y){
 		this.x = x;
 		this.y = y;
-		this.width = width;
 		adjacent = new ArrayList<Square>();
 	}
 	

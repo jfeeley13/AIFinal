@@ -11,22 +11,22 @@ import javax.swing.JPanel;
 
 public class Maze extends JFrame implements MouseListener{
 
-	int squareSize = 40;
+	int squareSize = 30;
 	Graphics g = super.getGraphics();
 	int width, height;
 
 	Board board;
 
-	public Maze(int width, int height){
+	public Maze(int width, int height, Square start, Square finish){
 
 		this.width = width;
 		this.height = height;
 
-		board = new Board(width, height, squareSize);
+		board = new Board(width, height, start, finish);
 
 		setContentPane(board);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(500, 500);
+		setSize(1000, 1000);
 		setVisible(true);
 		repaint();
 

@@ -13,37 +13,36 @@ public class Board extends JPanel{
 	
 	Square[][] grid;
 
-	public Board(int width, int height, int squareSize){
+	public Board(int width, int height, Square start, Square finish){
 		
 		this.width = width;
 		this.height = height;
-		this.squareSize = squareSize;
 		
 		grid = new Square[width][height];
 		
 		// Set up the board
 		for(int i = 0; i < width; i++){ 
 			for(int j = 0; j < height; j++){
-				grid[i][j] = new Square(i, j, squareSize);
+				grid[i][j] = new Square(i, j);
 				if(i != width - 1){
-					grid[i][j].adjacent.add(new Square(i+1, j, squareSize));
+					grid[i][j].adjacent.add(new Square(i+1, j));
 				}
 				
 				if(i != 0){
-					grid[i][j].adjacent.add(new Square(i-1, j, squareSize));
+					grid[i][j].adjacent.add(new Square(i-1, j));
 				}
 				
 				if(j != height - 1){
-					grid[i][j].adjacent.add(new Square(i, j+1, squareSize));
+					grid[i][j].adjacent.add(new Square(i, j+1));
 				}
 				
 				if(j != 0){
-					grid[i][j].adjacent.add(new Square(i, j-1, squareSize));
+					grid[i][j].adjacent.add(new Square(i, j-1));
 				}
 				
-				if(i == width - 1 && j == height - 1) grid[i][j].end = true; 
+				if(i ==  start.x && j == start.y) grid[i][j].start = true; 
 				
-				if(i == 0 && j == 0) grid[i][j].start = true;
+				if(i == finish.x && j == finish.y) grid[i][j].end = true;
 			}
 		}
 	}
