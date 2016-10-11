@@ -37,6 +37,12 @@ public class Maze extends JFrame implements MouseListener{
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
+		
+
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
 		for(int i = 0; i < width; i++){
 			for(int j = 0; j < height; j++){
 				if(e.getX() > i*squareSize && e.getX() < i*squareSize + squareSize 
@@ -61,12 +67,6 @@ public class Maze extends JFrame implements MouseListener{
 				}
 			}
 		}
-
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
 
 	}
 
