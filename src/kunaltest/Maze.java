@@ -18,10 +18,10 @@ public class Maze extends JFrame implements MouseListener{
 	Board board;
 
 	public Maze(int width, int height){
-		
+
 		this.width = width;
 		this.height = height;
-		
+
 		board = new Board(width, height, squareSize);
 
 		setContentPane(board);
@@ -43,37 +43,49 @@ public class Maze extends JFrame implements MouseListener{
 						&& e.getY() > j*squareSize && e.getY() < j*squareSize + squareSize){
 					System.out.println("click detected in: " + i + ", " + j);
 
-					board.grid[i][j].wall = 1 - board.grid[i][j].wall;
+					if(board.grid[i][j].wall == false  && board.grid[i][j].end == false && board.grid[i][j].start == false){
+						board.grid[i][j].wall = true;
+						for(int k = 0; k < width; k++){
+							for(int l = 0; l < height; l++){
+								for(int m = 0; m < board.grid[k][l].adjacent.size(); m++){
+									if(board.grid[k][l].adjacent.get(m).x == i && board.grid[k][l].adjacent.get(m).y == j){
+										System.out.println("We removed: " + board.grid[k][l].adjacent.get(m) + " from: " + board.grid[k][l]);
+										board.grid[k][l].adjacent.remove(m);
+									}
+								}
+							}
+						}
+					}
 
 					this.repaint();
 				}
 			}
 		}
-		
+
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
