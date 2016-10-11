@@ -2,8 +2,11 @@ package kunaltest;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
+import java.util.Map;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 public class Board extends JPanel{
 
@@ -14,7 +17,7 @@ public class Board extends JPanel{
 	Square[][] grid;
 	Square currentSquare;
 
-	public Board(int width, int height, Square start, Square finish){
+	public Board(int width, int height, Point start, Point finish){
 
 		this.width = width;
 		this.height = height;
@@ -84,11 +87,18 @@ public class Board extends JPanel{
 					grid[i][j].drawCircle(g);
 				}
 
-				//	System.out.println("Square: " + i + ", " + j);
-				//for(int k = 0; k < grid[i][j].adjacent.size(); k++){
-				//		System.out.println("\t" + grid[i][j].adjacent.get(k));
-				//	}
+					System.out.println("Square: " + i + ", " + j);
+				for(Map.Entry<Square, Integer> entry: grid[i][j].adjacent.entrySet()){
+						System.out.println("\t" + entry.getKey());
+					}
 			}
 		}
+	}
+	
+	public void changeActive(Square s){
+		grid[currentSquare.x][currentSquare.y].active = false;
+		grid[s.x][s.y].active = true;
+		currentSquare = grid[s.x][s.y];
+		SwingUtilities.getRoot(this).repaint();
 	}
 }

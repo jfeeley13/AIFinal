@@ -1,14 +1,17 @@
 package kunaltest;
 
+import java.awt.Point;
+
 public class Main {
 
 	public static void main(String[] args){
-		int boardHeight = 3;
-		int boardWidth = 3;
+		int boardHeight = 10;
+		int boardWidth = 10;
 
-		Maze m = new Maze(boardWidth, boardHeight, new Square(0, 0), new Square(boardWidth - 1, boardHeight - 1));
+		Maze m = new Maze(boardWidth, boardHeight, new Point(0, 0), new Point(boardWidth - 1, boardHeight - 1));
 		
-		QLearning algorithm = new QLearning(m.grid, m.currentSquare);
+		QLearning algorithm = new QLearning(m.board);
+		algorithm.search();
 		
 	}
 

@@ -1,6 +1,7 @@
 package kunaltest;
 
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Map;
@@ -17,7 +18,7 @@ public class Maze extends JFrame implements MouseListener{
 	Square[][] grid;
 	Square currentSquare;
 
-	public Maze(int width, int height, Square start, Square finish){
+	public Maze(int width, int height, Point start, Point finish){
 
 		this.width = width;
 		this.height = height;
@@ -33,8 +34,6 @@ public class Maze extends JFrame implements MouseListener{
 		repaint();
 
 		board.addMouseListener(this);
-
-
 	}
 
 	@Override
@@ -57,7 +56,6 @@ public class Maze extends JFrame implements MouseListener{
 						for(Map.Entry<Square, Integer> entry: board.grid[i][j].adjacent.entrySet()){
 							entry.getKey().adjacent.remove(board.grid[i][j]);
 							System.out.println("We removed: " + board.grid[i][j] + " from: " + entry.getKey());
-
 						}
 						//}
 						/*for(int k = 0; k < width; k++){
