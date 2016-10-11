@@ -1,13 +1,11 @@
 package kunaltest;
 
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Map;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 public class Maze extends JFrame implements MouseListener{
 
@@ -16,6 +14,8 @@ public class Maze extends JFrame implements MouseListener{
 	int width, height;
 
 	Board board;
+	Square[][] grid;
+	Square currentSquare;
 
 	public Maze(int width, int height, Square start, Square finish){
 
@@ -23,6 +23,8 @@ public class Maze extends JFrame implements MouseListener{
 		this.height = height;
 
 		board = new Board(width, height, start, finish);
+		grid = board.grid;
+		currentSquare = board.currentSquare;
 
 		setContentPane(board);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -37,7 +39,7 @@ public class Maze extends JFrame implements MouseListener{
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		
+
 
 	}
 
@@ -51,10 +53,13 @@ public class Maze extends JFrame implements MouseListener{
 
 					if(board.grid[i][j].wall == false  && board.grid[i][j].end == false && board.grid[i][j].start == false){
 						board.grid[i][j].wall = true;
-						for(int k = 0; k < board.grid[i][j].adjacent.size(); k++){
-							board.grid[i][j].adjacent.get(k).adjacent.remove(board.grid[i][j]);
-							System.out.println("We removed: " + board.grid[i][j] + " from: " + board.grid[i][j].adjacent.get(k));
+						//for(int k = 0; k < board.grid[i][j].adjacent.size(); k++){
+						for(Map.Entry<Square, Integer> entry: board.grid[i][j].adjacent.entrySet()){
+							entry.getKey().adjacent.remove(board.grid[i][j]);
+							System.out.println("We removed: " + board.grid[i][j] + " from: " + entry.getKey());
+
 						}
+						//}
 						/*for(int k = 0; k < width; k++){
 							for(int l = 0; l < height; l++){
 								for(int m = 0; m < board.grid[k][l].adjacent.size(); m++){
