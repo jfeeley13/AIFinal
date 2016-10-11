@@ -51,7 +51,11 @@ public class Maze extends JFrame implements MouseListener{
 
 					if(board.grid[i][j].wall == false  && board.grid[i][j].end == false && board.grid[i][j].start == false){
 						board.grid[i][j].wall = true;
-						for(int k = 0; k < width; k++){
+						for(int k = 0; k < board.grid[i][j].adjacent.size(); k++){
+							board.grid[i][j].adjacent.get(k).adjacent.remove(board.grid[i][j]);
+							System.out.println("We removed: " + board.grid[i][j] + " from: " + board.grid[i][j].adjacent.get(k));
+						}
+						/*for(int k = 0; k < width; k++){
 							for(int l = 0; l < height; l++){
 								for(int m = 0; m < board.grid[k][l].adjacent.size(); m++){
 									if(board.grid[k][l].adjacent.get(m).x == i && board.grid[k][l].adjacent.get(m).y == j){
@@ -60,7 +64,7 @@ public class Maze extends JFrame implements MouseListener{
 									}
 								}
 							}
-						}
+						}*/
 					}
 
 					this.repaint();
