@@ -9,13 +9,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Square{
 
 	int x, y;
-	int width = 30; // TODO: Change this hardcoded stuff
+	//int SIZE = 30; // TODO: Change this hardcoded stuff
 	Color c;
 	CopyOnWriteArrayList<Square> adjacent;
 	int weight = 0;
 	boolean wall = false;
 	
-	static final int SIZE = 20;
+	static final int SIZE = 30;
 	
 	boolean end = false;
 	boolean start = false;
@@ -27,19 +27,19 @@ public class Square{
 		adjacent = new CopyOnWriteArrayList<Square>();
 	}
 	
-	public void drawSquare(Graphics g, int squareSize){
+	public void drawSquare(Graphics g){
 		if(c == null){
-			g.drawRect(x*width, y*width, width, width);
+			g.drawRect(x*SIZE, y*SIZE, SIZE, SIZE);
 		}else{
 			g.setColor(c);
-			g.fillRect(x*width, y*width, width, width);
+			g.fillRect(x*SIZE, y*SIZE, SIZE, SIZE);
 		}
 		g.setColor(Color.BLACK);
 	}
 	
 	public void drawCircle(Graphics g){
 		g.setColor(Color.BLUE);
-		g.fillOval(x*width, y*width, width, width);
+		g.fillOval(x*SIZE, y*SIZE, SIZE, SIZE);
 	}
 	
 	@Override

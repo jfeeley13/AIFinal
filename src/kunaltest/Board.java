@@ -10,8 +10,7 @@ public class Board extends JPanel{
 
 	int width;
 	int height;
-	int squareSize;
-
+	
 	Square[][] grid;
 	Square currentSquare;
 	Square previousActive;
@@ -62,14 +61,14 @@ public class Board extends JPanel{
 		for(int i = 0; i < width; i++){ 
 			for(int j = 0; j < height; j++){
 				if(grid[i][j].end == true){
-					grid[i][j].drawSquare(g, squareSize);
+					grid[i][j].drawSquare(g);
 				}else if(grid[i][j].start == true){
-					grid[i][j].drawSquare(g, squareSize);
+					grid[i][j].drawSquare(g);
 				}else if(grid[i][j].wall == false){
-					grid[i][j].drawSquare(g, squareSize);
+					grid[i][j].drawSquare(g);
 				}else{
 					grid[i][j].setColor(Color.BLACK);
-					grid[i][j].drawSquare(g, squareSize);
+					grid[i][j].drawSquare(g);
 				}
 
 				if(grid[i][j].active == true){
