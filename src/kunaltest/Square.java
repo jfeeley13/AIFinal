@@ -4,13 +4,14 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Square{
 
 	int x, y;
 	int width = 30; // TODO: Change this hardcoded stuff
 	Color c;
-	List<Square> adjacent;
+	CopyOnWriteArrayList<Square> adjacent;
 	int weight = 0;
 	boolean wall = false;
 	
@@ -21,7 +22,7 @@ public class Square{
 	public Square(int x, int y){
 		this.x = x;
 		this.y = y;
-		adjacent = new ArrayList<Square>();
+		adjacent = new CopyOnWriteArrayList<Square>();
 	}
 	
 	public void drawSquare(Graphics g, int squareSize){
@@ -39,6 +40,7 @@ public class Square{
 		g.fillOval(x*width, y*width, width, width);
 	}
 	
+	@Override
 	public String toString(){
 		return "X: " + x + " Y: " + y;
 	}
