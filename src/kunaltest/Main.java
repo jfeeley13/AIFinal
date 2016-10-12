@@ -15,6 +15,7 @@ public class Main {
 		//inProgress = true;
 		//QLearning algorithm = new QLearning(m.board);
 		//algorithm.search();
+		//m.delayedSearch(100);
 
 	}
 }

@@ -74,8 +74,6 @@ public class Board extends JPanel{
 		}
 	}
 	public void paintComponent(Graphics g){
-
-		System.out.println("Painting!!");
 		
 		for(int i = 0; i < width; i++){ 
 			for(int j = 0; j < height; j++){

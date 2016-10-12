@@ -1,6 +1,10 @@
 package kunaltest;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
+import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,13 +13,14 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
-import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.Timer;
+import javax.swing.BoxLayout;
 
 public class Maze implements MouseListener, ActionListener{
 
@@ -27,11 +32,13 @@ public class Maze implements MouseListener, ActionListener{
 	Board board;
 	Square[][] grid;
 	Square currentSquare;
-	JButton startGame;
+	JButton instantaneousSearch;
+	JButton delayedSearch;
+	JTextField delay;
 	JButton endGame;
-	
-//    BufferedImage buffer;
-	Timer t;
+
+	//    BufferedImage buffer;
+	Timer t = null;
 
 	boolean inProgress = false;
 
@@ -41,81 +48,117 @@ public class Maze implements MouseListener, ActionListener{
 		this.width = width;
 		this.height = height;
 		
-       // this.buffer = new BufferedImage(1000, 1000, BufferedImage.TYPE_INT_ARGB);
+		JPanel p = new JPanel();
 
-       /* new Timer(2000, new ActionListener() {
+		// this.buffer = new BufferedImage(1000, 1000, BufferedImage.TYPE_INT_ARGB);
+
+		/* new Timer(2000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
             	search();
                 main.repaint();
             }
         }).start();*/
-		t = new Timer(500, this);
-		
+		//	t = new Timer(0, this);
+
 		board = new Board(width, height, start, finish);
 		grid = board.grid;
 		currentSquare = board.currentSquare;
 
 		main.setContentPane(board);
-
-		startGame = new JButton("Start");
-		endGame = new JButton("End");
-		main.add(startGame);
-		main.add(endGame);
 		
+
+
+		instantaneousSearch = new JButton("Instantaneous Search");
+		instantaneousSearch.setBounds(362, 11, 188, 23);
+		delayedSearch = new JButton("Delayed Search");
+		delayedSearch.setBounds(362, 49, 139, 23);
+		delay = new JTextField("20");
+		delay.setBounds(520, 50, 100, 20);
+		delay.setPreferredSize(new Dimension(100, 20));
+		endGame = new JButton("End");
+		endGame.setBounds(362, 90, 83, 23);
+		board.setLayout(null);
+
+		
+		board.add(instantaneousSearch);
+		board.add(delayedSearch);
+		board.add(delay);
+		board.add(endGame);
+		
+		//main.add(p);
+
 		main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		main.setSize(1000, 1000);
 		main.setVisible(true);
 
 
 		board.addMouseListener(this);
-		startGame.addActionListener(this);
+		instantaneousSearch.addActionListener(this);
+		delayedSearch.addActionListener(this);
 		endGame.addActionListener(this);
 
 	}
-	
-	public void search(){
+
+	public void delayedSearch(int delay){
+		t = new Timer(delay, this);
+		t.start();
+	}
+
+	public void noDelaySearch(){
+		double currentTime = System.currentTimeMillis();
+
+		while(true){
+			if(search() == 100) break;
+		}
+		double endTime = System.currentTimeMillis();
+		System.out.println("Total Time: " + (endTime - currentTime));
+
+	}
+
+	public int search(){
 
 		int bestWeight = 0;
 		Square bestSquare = null;
 
 		Random r = new Random();
-	
-	//	while(true){
-			// Check the nodes with the best weight
-			for(Map.Entry<Square, Integer> entry : currentSquare.adjacent.entrySet()){
-				if(entry.getValue() > bestWeight){
-					bestWeight = entry.getValue();
-					bestSquare = entry.getKey();
-				}
-			}
 
-			//System.out.println(currentSquare.adjacent);
-			// Weights are all the same
-			if(bestWeight == 0){
-				List<Square> keys = new ArrayList<Square>(currentSquare.adjacent.keySet());
-				//System.out.println(keys.size());
-				Square randomSquare = keys.get(r.nextInt(keys.size()));
-				bestSquare = randomSquare;
+		//	while(true){
+		// Check the nodes with the best weight
+		for(Map.Entry<Square, Integer> entry : currentSquare.adjacent.entrySet()){
+			if(entry.getValue() > bestWeight){
+				bestWeight = entry.getValue();
+				bestSquare = entry.getKey();
 			}
+		}
 
-			// Now we know which square we are going to progress to
-			move(bestSquare);
-			//if(bestWeight == 100) break;
-			
-			main.repaint();
-			//bestWeight = 0;
-			//return;
-	//	}
+		//System.out.println(currentSquare.adjacent);
+		// Weights are all the same
+		if(bestWeight == 0){
+			List<Square> keys = new ArrayList<Square>(currentSquare.adjacent.keySet());
+			//System.out.println(keys.size());
+			Square randomSquare = keys.get(r.nextInt(keys.size()));
+			bestSquare = randomSquare;
+		}
+
+		// Now we know which square we are going to progress to
+		move(bestSquare);
+		//if(bestWeight == 100) t.stop();
+
+		main.repaint();
+		return bestWeight;
+		//bestWeight = 0;
+		//return;
+		//}
 	}
-	
+
 	private void move(Square s){
 
 		// This way we can actually see it move (may change this implementation later)
 		//try {
-			//Thread.sleep(20);
-	//	} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+		//Thread.sleep(20);
+		//	} catch (InterruptedException e) {
+		// TODO Auto-generated catch block
 		//	e.printStackTrace();
 		//}
 
@@ -126,14 +169,14 @@ public class Maze implements MouseListener, ActionListener{
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		
+
 
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
 		if(inProgress) return;
-		
+
 		for(int i = 0; i < width; i++){
 			for(int j = 0; j < height; j++){
 				if(e.getX() > i*squareSize && e.getX() < i*squareSize + squareSize 
@@ -142,9 +185,9 @@ public class Maze implements MouseListener, ActionListener{
 
 					if(board.grid[i][j].wall == false  && board.grid[i][j].end == false && board.grid[i][j].start == false){
 						board.grid[i][j].wall = true;
-								
+
 						board.removeAdjacentSquare(board.grid[i][j]);
-					
+
 						//}
 						/*for(int k = 0; k < width; k++){
 							for(int l = 0; l < height; l++){
@@ -162,7 +205,7 @@ public class Maze implements MouseListener, ActionListener{
 				}
 			}
 		}
-		
+
 		//System.out.println(board.grid[0][0].adjacent);
 
 	}
@@ -170,34 +213,44 @@ public class Maze implements MouseListener, ActionListener{
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == startGame){
+		if(e.getSource() == instantaneousSearch){
 			if(!inProgress){
-				this.search();
 				inProgress = true;
-				t.start();
+				noDelaySearch();
+				//this.search();
+				//t.start();
 			}
 		}
-		
+
+		if(e.getSource() == delayedSearch){
+			if(!inProgress){
+
+				inProgress = true;
+				delayedSearch(Integer.parseInt(delay.getText()));
+			}
+		}
+
 		if(e.getSource() == endGame){
-			t.stop();
+			///	t.stop();
 			inProgress = false;
+			if(t != null) t.stop();
 		}
 		if(e.getSource() == t){
 			search();
