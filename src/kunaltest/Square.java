@@ -15,6 +15,8 @@ public class Square{
 	int weight = 0;
 	boolean wall = false;
 	
+	static final int SIZE = 20;
+	
 	boolean end = false;
 	boolean start = false;
 	boolean active = false;

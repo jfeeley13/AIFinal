@@ -12,20 +12,18 @@ import java.util.Random;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.Timer;
 
 public class Maze implements MouseListener, ActionListener{
-
-	int squareSize = 30;
-	JFrame main;
-	Graphics g;
-	int width, height;
-
-	Board board;
+	
 	Square[][] grid;
-	Square currentSquare;
+	int width, height;
+	Board board;
+
+	
+	JFrame main;
+	
 	JButton instantaneousSearch;
 	JButton delayedSearch;
 	JTextField delay;
@@ -36,8 +34,6 @@ public class Maze implements MouseListener, ActionListener{
 	Point finish;
 
 	boolean goal = false;
-
-	//    BufferedImage buffer;
 	Timer t = null;
 
 	boolean inProgress = false;
@@ -46,28 +42,21 @@ public class Maze implements MouseListener, ActionListener{
 
 		this.start = start;
 		this.finish = finish;
-
-		main = new JFrame();
+		
 		this.width = width;
 		this.height = height;
-
-		JPanel p = new JPanel();
-
-		// this.buffer = new BufferedImage(1000, 1000, BufferedImage.TYPE_INT_ARGB);
-
-		/* new Timer(2000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            	search();
-                main.repaint();
-            }
-        }).start();*/
-		//	t = new Timer(0, this);
-
+		
+		// Set up the board
 		board = new Board(width, height, start, finish);
-		grid = board.grid;
-		currentSquare = board.currentSquare;
 
+		initializeGraphics();
+
+	}
+	
+	// For the most part this can be ignored, just initializing graphics objects
+	private void initializeGraphics(){
+		main = new JFrame();
+		
 		main.setContentPane(board);
 
 		instantaneousSearch = new JButton("Instantaneous Search");
@@ -81,7 +70,6 @@ public class Maze implements MouseListener, ActionListener{
 		endGame.setBounds(362, 79, 181, 23);
 		board.setLayout(null);
 
-
 		board.add(instantaneousSearch);
 		board.add(delayedSearch);
 		board.add(delay);
@@ -92,20 +80,17 @@ public class Maze implements MouseListener, ActionListener{
 		restart.setBounds(362, 113, 181, 23);
 		board.add(restart);
 
-		//main.add(p);
-
 		main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		main.setSize(1000, 1000);
 		main.setVisible(true);
-
 
 		board.addMouseListener(this);
 		instantaneousSearch.addActionListener(this);
 		delayedSearch.addActionListener(this);
 		endGame.addActionListener(this);
-
 	}
 
+	// Initialize and start a timer
 	public void delayedSearch(int delay){
 		t = new Timer(delay, this);
 		t.start();
@@ -113,10 +98,7 @@ public class Maze implements MouseListener, ActionListener{
 
 	public void noDelaySearch(){
 
-		while(!search()){
-			//search();
-		}
-
+		while(!search()){} // Just keep going until we reach the goal
 
 	}
 
@@ -131,7 +113,7 @@ public class Maze implements MouseListener, ActionListener{
 
 		//	while(true){
 		// Check the nodes with the best weight
-		for(Square s : currentSquare.adjacent){
+		for(Square s : board.currentSquare.adjacent){
 			if(board.grid[s.x][s.y].weight > bestWeight){
 				bestWeight = board.grid[s.x][s.y].weight;
 				bestSquare = board.grid[s.x][s.y];
@@ -144,22 +126,22 @@ public class Maze implements MouseListener, ActionListener{
 			//System.out.println(keys.size());
 
 			// TODO: What if adjacency list is empty?
-			Square randomSquare = currentSquare.adjacent.get(r.nextInt(currentSquare.adjacent.size()));
+			Square randomSquare = board.currentSquare.adjacent.get(r.nextInt(board.currentSquare.adjacent.size()));
 			bestSquare = randomSquare;
 
 		}else{
 			// Set the weight from the previous current to the current square (which leads to the goal) also to be 100!
 			// TODO: IF PREVIOUS ACTIVE IS NULL?
 			for(Square adjacent : board.previousActive.adjacent){
-				if(adjacent.x == currentSquare.x && adjacent.y == currentSquare.y){
-					if(board.grid[currentSquare.x][currentSquare.y].c != Color.PINK){
+				if(adjacent.x == board.currentSquare.x && adjacent.y == board.currentSquare.y){
+					if(board.grid[board.currentSquare.x][board.currentSquare.y].c != Color.PINK){
 						System.out.println();
 
 						System.out.println("Previous active: " + board.previousActive);
 
-						System.out.println("Setting pink to: " + currentSquare.x + ", " + currentSquare.y);
+						System.out.println("Setting pink to: " + board.currentSquare.x + ", " + board.currentSquare.y);
 						adjacent.weight = 80;
-						board.grid[currentSquare.x][currentSquare.y].setColor(Color.PINK);
+						board.grid[board.currentSquare.x][board.currentSquare.y].setColor(Color.PINK);
 					}
 				}
 			}			
@@ -175,25 +157,13 @@ public class Maze implements MouseListener, ActionListener{
 		main.repaint();
 
 		return foundGoal;
-
-		//return bestWeight;
-		//bestWeight = 0;
-		//return;
-		//}
 	}
 
 	private void move(Square s){
 
-		// This way we can actually see it move (may change this implementation later)
-		//try {
-		//Thread.sleep(20);
-		//	} catch (InterruptedException e) {
-		// TODO Auto-generated catch block
-		//	e.printStackTrace();
-		//}
-
+		// Change the active square to the one we want to move to
 		board.changeActive(s);
-		this.currentSquare = board.currentSquare;
+		//this.currentSquare = board.currentSquare;
 
 	}
 
@@ -207,37 +177,24 @@ public class Maze implements MouseListener, ActionListener{
 	public void mousePressed(MouseEvent e) {
 		if(inProgress) return;
 
+		// If a square is clicked, turn it into a wall (maybe we can find a different system for creating mazes, such as through text file though)
 		for(int i = 0; i < width; i++){
 			for(int j = 0; j < height; j++){
-				if(e.getX() > i*squareSize && e.getX() < i*squareSize + squareSize 
-						&& e.getY() > j*squareSize && e.getY() < j*squareSize + squareSize){
+				// Which square is clicked -- just trust that this works
+				if(e.getX() > i*Square.SIZE && e.getX() < i*Square.SIZE + Square.SIZE 
+						&& e.getY() > j*Square.SIZE && e.getY() < j*Square.SIZE + Square.SIZE){
 					System.out.println("click detected in: " + i + ", " + j);
 
 					if(board.grid[i][j].wall == false  && board.grid[i][j].end == false && board.grid[i][j].start == false){
 						board.grid[i][j].wall = true;
 
 						board.removeAdjacentSquare(board.grid[i][j]);
-
-						//}
-						/*for(int k = 0; k < width; k++){
-							for(int l = 0; l < height; l++){
-								for(int m = 0; m < board.grid[k][l].adjacent.size(); m++){
-									if(board.grid[k][l].adjacent.get(m).x == i && board.grid[k][l].adjacent.get(m).y == j){
-										System.out.println("We removed: " + board.grid[k][l].adjacent.get(m) + " from: " + board.grid[k][l]);
-										board.grid[k][l].adjacent.remove(m);
-									}
-								}
-							}
-						}*/
 					}
 
 					main.repaint();
 				}
 			}
 		}
-
-		//System.out.println(board.grid[0][0].adjacent);
-
 	}
 
 	@Override
@@ -260,6 +217,8 @@ public class Maze implements MouseListener, ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		
+		// This search completes as fast as it can
 		if(e.getSource() == instantaneousSearch){
 			if(!inProgress){
 				inProgress = true;
@@ -269,30 +228,33 @@ public class Maze implements MouseListener, ActionListener{
 			}
 		}
 
+		// This search uses a swing timer to visually display the path being taken
 		if(e.getSource() == delayedSearch){
 			if(!inProgress){
-
 				inProgress = true;
-				delayedSearch(Integer.parseInt(delay.getText()));
+				delayedSearch(Integer.parseInt(delay.getText())); // Let the user enter in the delay they want to use in the JTextField
 			}
 		}
 
+		// Kind of misleading, this "pauses" the search
 		if(e.getSource() == endGame){
-			///	t.stop();
 			inProgress = false;
 			if(t != null) t.stop();
 		}
 
+		// This resets the search to the starting square and stops the search
 		if(e.getSource() == restart){
 			board.changeActive(new Square(start.x, start.y));
 			board.previousActive = null;
-			this.currentSquare = board.currentSquare;
+			//currentSquare = board.currentSquare;
 
 			inProgress = false;
 			if(t != null) t.stop();
 			main.repaint();
 
 		}
+		
+		// On each timer tick perform a move, unless we have reached the goal
 		if(e.getSource() == t){
 			if(search() == true) t.stop();
 		}
