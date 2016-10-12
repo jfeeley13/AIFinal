@@ -40,6 +40,8 @@ public class Maze implements MouseListener, ActionListener{
 
 	Point start;
 	Point finish;
+	
+	boolean goal = false;
 
 	//    BufferedImage buffer;
 	Timer t = null;
@@ -83,7 +85,7 @@ public class Maze implements MouseListener, ActionListener{
 		delay = new JTextField("20");
 		delay.setBounds(555, 46, 100, 20);
 		delay.setPreferredSize(new Dimension(100, 20));
-		endGame = new JButton("End");
+		endGame = new JButton("Pause");
 		endGame.setBounds(362, 79, 181, 23);
 		board.setLayout(null);
 
@@ -93,7 +95,7 @@ public class Maze implements MouseListener, ActionListener{
 		board.add(delay);
 		board.add(endGame);
 
-		restart = new JButton("Restart");
+		restart = new JButton("Reset");
 		restart.addActionListener(this);
 		restart.setBounds(362, 113, 181, 23);
 		board.add(restart);
@@ -118,17 +120,18 @@ public class Maze implements MouseListener, ActionListener{
 	}
 
 	public void noDelaySearch(){
-		double currentTime = System.currentTimeMillis();
+		//double currentTime = System.currentTimeMillis();
 
-		while(true){
-			if(search() == 100) break;
+		while(!search()){
+			//search();
 		}
-		double endTime = System.currentTimeMillis();
-		System.out.println("Total Time: " + (endTime - currentTime));
+		//double endTime = System.currentTimeMillis();
+		//	System.out.println("Total Time: " + (endTime - currentTime));
 
 	}
 
-	public int search(){
+	// TODO: Maybe make this a static method in some QLearning class
+	public boolean search(){
 
 		int bestWeight = 0;
 		Square bestSquare = null;
@@ -149,16 +152,21 @@ public class Maze implements MouseListener, ActionListener{
 		if(bestWeight == 0){
 			List<Square> keys = new ArrayList<Square>(currentSquare.adjacent.keySet());
 			//System.out.println(keys.size());
+			
+			// TODO: What if adjacency list is empty?
 			Square randomSquare = keys.get(r.nextInt(keys.size()));
 			bestSquare = randomSquare;
+
 		}
 
 		// Now we know which square we are going to progress to
 		move(bestSquare);
-		//if(bestWeight == 100) t.stop();
-
 		main.repaint();
-		return bestWeight;
+
+		if(bestSquare.x == finish.x && bestSquare.y == finish.y) return true;
+		else return false;
+	
+		//return bestWeight;
 		//bestWeight = 0;
 		//return;
 		//}
@@ -275,7 +283,7 @@ public class Maze implements MouseListener, ActionListener{
 
 		}
 		if(e.getSource() == t){
-			search();
+			if(search() == true) t.stop();
 		}
 	}
 }
