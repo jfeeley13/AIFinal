@@ -2,7 +2,6 @@ package kunaltest;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -176,7 +175,7 @@ public class Maze implements MouseListener, ActionListener{
 	@Override
 	public void mousePressed(MouseEvent e) {
 		if(inProgress) return;
-
+		
 		// If a square is clicked, turn it into a wall (maybe we can find a different system for creating mazes, such as through text file though)
 		for(int i = 0; i < width; i++){
 			for(int j = 0; j < height; j++){
