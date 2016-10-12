@@ -14,10 +14,11 @@ import java.util.Random;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 
-public class Maze extends JFrame implements MouseListener{
+public class Maze implements MouseListener, ActionListener{
 
 	int squareSize = 30;
-	Graphics g = super.getGraphics();
+	JFrame main;
+	Graphics g;
 	int width, height;
 
 	Board board;
@@ -29,6 +30,7 @@ public class Maze extends JFrame implements MouseListener{
 
 	public Maze(int width, int height, Point start, Point finish){
 
+		main = new JFrame();
 		this.width = width;
 		this.height = height;
 		
@@ -36,18 +38,18 @@ public class Maze extends JFrame implements MouseListener{
 		grid = board.grid;
 		currentSquare = board.currentSquare;
 
-		this.setContentPane(board);
+		main.setContentPane(board);
 
 		startGame = new JButton("Start");
-		this.add(startGame);
+		main.add(startGame);
 		
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(1000, 1000);
-		setVisible(true);
+		main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		main.setSize(1000, 1000);
+		main.setVisible(true);
 
 
 		board.addMouseListener(this);
-		startGame.addMouseListener(this);
+		startGame.addActionListener(this);
 
 	}
 	
@@ -79,10 +81,12 @@ public class Maze extends JFrame implements MouseListener{
 			// Now we know which square we are going to progress to
 			move(bestSquare);
 			if(bestWeight == 100) break;
+			
+			main.repaint();
 			//bestWeight = 0;
 			//return;
 		}
-
+		
 	}
 	
 	private void move(Square s){
@@ -102,12 +106,7 @@ public class Maze extends JFrame implements MouseListener{
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if(e.getSource() == startGame){
-			if(!inProgress){
-				this.search();
-				inProgress = true;
-			}
-		}
+		
 
 	}
 
@@ -139,7 +138,7 @@ public class Maze extends JFrame implements MouseListener{
 						}*/
 					}
 
-					this.repaint();
+					main.repaint();
 				}
 			}
 		}
@@ -161,6 +160,17 @@ public class Maze extends JFrame implements MouseListener{
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource() == startGame){
+			if(!inProgress){
+				this.search();
+				inProgress = true;
+			}
+		}
 		
 	}
 }
