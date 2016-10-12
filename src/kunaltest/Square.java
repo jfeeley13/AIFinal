@@ -2,15 +2,16 @@ package kunaltest;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Square{
 
 	int x, y;
 	int width = 30; // TODO: Change this hardcoded stuff
 	Color c;
-	ConcurrentHashMap<Square, Integer> adjacent;
+	List<Square> adjacent;
+	int weight = 0;
 	boolean wall = false;
 	
 	boolean end = false;
@@ -20,7 +21,7 @@ public class Square{
 	public Square(int x, int y){
 		this.x = x;
 		this.y = y;
-		adjacent = new ConcurrentHashMap<Square, Integer>();
+		adjacent = new ArrayList<Square>();
 	}
 	
 	public void drawSquare(Graphics g, int squareSize){
@@ -51,5 +52,17 @@ public class Square{
 	
 	public void setColor(Color c){
 		this.c = c;
+	}
+	
+	public void setStart(){
+		this.start = true; 
+		this.active = true;
+		this.setColor(Color.GREEN);
+	}
+	
+	public void setEnd(){
+		this.end = true;
+		this.setColor(Color.RED);
+		this.weight = 100;
 	}
 }

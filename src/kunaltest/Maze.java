@@ -37,7 +37,7 @@ public class Maze implements MouseListener, ActionListener{
 
 	Point start;
 	Point finish;
-	
+
 	boolean goal = false;
 
 	//    BufferedImage buffer;
@@ -72,8 +72,6 @@ public class Maze implements MouseListener, ActionListener{
 		currentSquare = board.currentSquare;
 
 		main.setContentPane(board);
-
-
 
 		instantaneousSearch = new JButton("Instantaneous Search");
 		instantaneousSearch.setBounds(362, 11, 181, 23);
@@ -121,7 +119,7 @@ public class Maze implements MouseListener, ActionListener{
 		while(!search()){
 			//search();
 		}
-	
+
 
 	}
 
@@ -136,42 +134,51 @@ public class Maze implements MouseListener, ActionListener{
 
 		//	while(true){
 		// Check the nodes with the best weight
-		for(Map.Entry<Square, Integer> entry : currentSquare.adjacent.entrySet()){
-			if(entry.getValue() > bestWeight){
-				bestWeight = entry.getValue();
-				bestSquare = entry.getKey();
+		for(Square s : currentSquare.adjacent){
+			if(board.grid[s.x][s.y].weight > bestWeight){
+				bestWeight = board.grid[s.x][s.y].weight;
+				bestSquare = board.grid[s.x][s.y];
 			}
 		}
 
 		//System.out.println(currentSquare.adjacent);
 		// Weights are all the same
 		if(bestWeight == 0){
-			List<Square> keys = new ArrayList<Square>(currentSquare.adjacent.keySet());
 			//System.out.println(keys.size());
-			
+
 			// TODO: What if adjacency list is empty?
-			Square randomSquare = keys.get(r.nextInt(keys.size()));
+			Square randomSquare = currentSquare.adjacent.get(r.nextInt(currentSquare.adjacent.size()));
 			bestSquare = randomSquare;
 
 		}else{
 			// Set the weight from the previous current to the current square (which leads to the goal) also to be 100!
 			// TODO: IF PREVIOUS ACTIVE IS NULL?
-			for(Map.Entry<Square, Integer> adjacent : board.previousActive.adjacent.entrySet()){
-				if(adjacent.getKey().x == currentSquare.x && adjacent.getKey().y == currentSquare.y){
-					adjacent.setValue(80);
-					board.grid[currentSquare.x][currentSquare.y].setColor(Color.PINK);
+			for(Square adjacent : board.previousActive.adjacent){
+				if(adjacent.x == currentSquare.x && adjacent.y == currentSquare.y){
+					if(board.grid[currentSquare.x][currentSquare.y].c != Color.PINK){
+						System.out.println();
+
+						System.out.println("Previous active: " + board.previousActive);
+
+						System.out.println("Setting pink to: " + currentSquare.x + ", " + currentSquare.y);
+						adjacent.weight = 80;
+						board.grid[currentSquare.x][currentSquare.y].setColor(Color.PINK);
+					}
 				}
 			}			
 		}
-		
-		if(bestWeight == 100) foundGoal = true;
-		
+
+		if(bestWeight == 100){
+			foundGoal = true;
+			return foundGoal;
+		}
+
 		// Now we know which square we are going to progress to
 		move(bestSquare);
 		main.repaint();
 
 		return foundGoal;
-	
+
 		//return bestWeight;
 		//bestWeight = 0;
 		//return;

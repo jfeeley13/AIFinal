@@ -1,4 +1,4 @@
-package kunaltest;
+/*package kunaltest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,4 +65,4 @@ public class QLearning {
 		b.changeActive(s);
 		this.currentSquare = b.currentSquare;
 	}
-}
+}*/
