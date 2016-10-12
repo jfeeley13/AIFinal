@@ -2,10 +2,16 @@ package kunaltest;
 
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 
 public class Maze extends JFrame implements MouseListener{
@@ -17,28 +23,91 @@ public class Maze extends JFrame implements MouseListener{
 	Board board;
 	Square[][] grid;
 	Square currentSquare;
+	JButton startGame;
+
+	boolean inProgress = false;
 
 	public Maze(int width, int height, Point start, Point finish){
 
 		this.width = width;
 		this.height = height;
-
+		
 		board = new Board(width, height, start, finish);
 		grid = board.grid;
 		currentSquare = board.currentSquare;
 
-		setContentPane(board);
+		this.setContentPane(board);
+
+		startGame = new JButton("Start");
+		this.add(startGame);
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(1000, 1000);
 		setVisible(true);
-		repaint();
+
 
 		board.addMouseListener(this);
+		startGame.addMouseListener(this);
+
+	}
+	
+	public void search(){
+
+		int bestWeight = 0;
+		Square bestSquare = null;
+
+		Random r = new Random();
+		int i = 0;
+		while(i < 10){
+			// Check the nodes with the best weight
+			for(Map.Entry<Square, Integer> entry : currentSquare.adjacent.entrySet()){
+				if(entry.getValue() > bestWeight){
+					bestWeight = entry.getValue();
+					bestSquare = entry.getKey();
+				}
+			}
+
+			System.out.println(currentSquare.adjacent);
+			// Weights are all the same
+			if(bestWeight == 0){
+				List<Square> keys = new ArrayList<Square>(currentSquare.adjacent.keySet());
+				System.out.println(keys.size());
+				Square randomSquare = keys.get(r.nextInt(keys.size()));
+				bestSquare = randomSquare;
+			}
+
+			// Now we know which square we are going to progress to
+			move(bestSquare);
+			if(bestWeight == 100) break;
+			//bestWeight = 0;
+			//return;
+		}
+
+	}
+	
+	private void move(Square s){
+
+		// This way we can actually see it move (may change this implementation later)
+		try {
+			Thread.sleep(300);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		board.changeActive(s);
+		this.currentSquare = board.currentSquare;
+
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-
+		if(e.getSource() == startGame){
+			if(!inProgress){
+				this.search();
+				inProgress = true;
+			}
+		}
 
 	}
 
@@ -80,19 +149,18 @@ public class Maze extends JFrame implements MouseListener{
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
-
+		
 	}
-
 }

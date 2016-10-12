@@ -3,8 +3,11 @@ package kunaltest;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Map;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -23,6 +26,7 @@ public class Board extends JPanel{
 		this.height = height;
 
 		grid = new Square[width][height];
+
 
 		// Set up the board
 		for(int i = 0; i < width; i++){ 
@@ -101,4 +105,5 @@ public class Board extends JPanel{
 		currentSquare = grid[s.x][s.y];
 		SwingUtilities.getRoot(this).repaint();
 	}
+
 }
