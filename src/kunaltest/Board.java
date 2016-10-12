@@ -75,6 +75,8 @@ public class Board extends JPanel{
 	}
 	public void paintComponent(Graphics g){
 
+		System.out.println("Painting!!");
+		
 		for(int i = 0; i < width; i++){ 
 			for(int j = 0; j < height; j++){
 				if(grid[i][j].end == true){
@@ -91,9 +93,9 @@ public class Board extends JPanel{
 					grid[i][j].drawCircle(g);
 				}
 
-					System.out.println("Square: " + i + ", " + j);
+					//System.out.println("Square: " + i + ", " + j);
 				for(Map.Entry<Square, Integer> entry: grid[i][j].adjacent.entrySet()){
-						System.out.println("\t" + entry.getKey());
+						//System.out.println("\t" + entry.getKey());
 					}
 			}
 		}

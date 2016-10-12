@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import java.util.Random;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.Timer;
 
 public class Maze implements MouseListener, ActionListener{
 
@@ -25,6 +27,9 @@ public class Maze implements MouseListener, ActionListener{
 	Square[][] grid;
 	Square currentSquare;
 	JButton startGame;
+	
+//    BufferedImage buffer;
+	Timer t;
 
 	boolean inProgress = false;
 
@@ -33,6 +38,17 @@ public class Maze implements MouseListener, ActionListener{
 		main = new JFrame();
 		this.width = width;
 		this.height = height;
+		
+       // this.buffer = new BufferedImage(1000, 1000, BufferedImage.TYPE_INT_ARGB);
+
+       /* new Timer(2000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	search();
+                main.repaint();
+            }
+        }).start();*/
+		t = new Timer(500, this);
 		
 		board = new Board(width, height, start, finish);
 		grid = board.grid;
@@ -59,8 +75,8 @@ public class Maze implements MouseListener, ActionListener{
 		Square bestSquare = null;
 
 		Random r = new Random();
-		int i = 0;
-		while(i < 10){
+	
+	//	while(true){
 			// Check the nodes with the best weight
 			for(Map.Entry<Square, Integer> entry : currentSquare.adjacent.entrySet()){
 				if(entry.getValue() > bestWeight){
@@ -69,35 +85,34 @@ public class Maze implements MouseListener, ActionListener{
 				}
 			}
 
-			System.out.println(currentSquare.adjacent);
+			//System.out.println(currentSquare.adjacent);
 			// Weights are all the same
 			if(bestWeight == 0){
 				List<Square> keys = new ArrayList<Square>(currentSquare.adjacent.keySet());
-				System.out.println(keys.size());
+				//System.out.println(keys.size());
 				Square randomSquare = keys.get(r.nextInt(keys.size()));
 				bestSquare = randomSquare;
 			}
 
 			// Now we know which square we are going to progress to
 			move(bestSquare);
-			if(bestWeight == 100) break;
+			//if(bestWeight == 100) break;
 			
 			main.repaint();
 			//bestWeight = 0;
 			//return;
-		}
-		
+	//	}
 	}
 	
 	private void move(Square s){
 
 		// This way we can actually see it move (may change this implementation later)
-		try {
-			Thread.sleep(300);
-		} catch (InterruptedException e) {
+		//try {
+			//Thread.sleep(20);
+	//	} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		//	e.printStackTrace();
+		//}
 
 		board.changeActive(s);
 		this.currentSquare = board.currentSquare;
@@ -123,7 +138,7 @@ public class Maze implements MouseListener, ActionListener{
 						//for(int k = 0; k < board.grid[i][j].adjacent.size(); k++){
 						for(Map.Entry<Square, Integer> entry: board.grid[i][j].adjacent.entrySet()){
 							entry.getKey().adjacent.remove(board.grid[i][j]);
-							System.out.println("We removed: " + board.grid[i][j] + " from: " + entry.getKey());
+							//System.out.println("We removed: " + board.grid[i][j] + " from: " + entry.getKey());
 						}
 						//}
 						/*for(int k = 0; k < width; k++){
@@ -169,8 +184,12 @@ public class Maze implements MouseListener, ActionListener{
 			if(!inProgress){
 				this.search();
 				inProgress = true;
+				t.start();
 			}
 		}
 		
+		if(e.getSource() == t){
+			search();
+		}
 	}
 }
