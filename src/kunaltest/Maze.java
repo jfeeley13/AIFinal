@@ -1,10 +1,7 @@
 package kunaltest;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Graphics;
-import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,7 +17,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.Timer;
-import javax.swing.BoxLayout;
 
 public class Maze implements MouseListener, ActionListener{
 
@@ -120,13 +116,11 @@ public class Maze implements MouseListener, ActionListener{
 	}
 
 	public void noDelaySearch(){
-		//double currentTime = System.currentTimeMillis();
 
 		while(!search()){
 			//search();
 		}
-		//double endTime = System.currentTimeMillis();
-		//	System.out.println("Total Time: " + (endTime - currentTime));
+	
 
 	}
 
@@ -158,13 +152,17 @@ public class Maze implements MouseListener, ActionListener{
 			bestSquare = randomSquare;
 
 		}
+		
+		boolean foundGoal = false;
+		
+		if(bestSquare.x == finish.x && bestSquare.y == finish.y) foundGoal = true;
 
+		
 		// Now we know which square we are going to progress to
 		move(bestSquare);
 		main.repaint();
 
-		if(bestSquare.x == finish.x && bestSquare.y == finish.y) return true;
-		else return false;
+		return foundGoal;
 	
 		//return bestWeight;
 		//bestWeight = 0;
