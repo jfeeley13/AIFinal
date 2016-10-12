@@ -1,5 +1,6 @@
 package kunaltest;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -127,6 +128,7 @@ public class Maze implements MouseListener, ActionListener{
 	// TODO: Maybe make this a static method in some QLearning class
 	public boolean search(){
 
+		boolean foundGoal = false;
 		int bestWeight = 0;
 		Square bestSquare = null;
 
@@ -151,12 +153,18 @@ public class Maze implements MouseListener, ActionListener{
 			Square randomSquare = keys.get(r.nextInt(keys.size()));
 			bestSquare = randomSquare;
 
+		}else{
+			// Set the weight from the previous current to the current square (which leads to the goal) also to be 100!
+			// TODO: IF PREVIOUS ACTIVE IS NULL?
+			for(Map.Entry<Square, Integer> adjacent : board.previousActive.adjacent.entrySet()){
+				if(adjacent.getKey().x == currentSquare.x && adjacent.getKey().y == currentSquare.y){
+					adjacent.setValue(80);
+					board.grid[currentSquare.x][currentSquare.y].setColor(Color.PINK);
+				}
+			}			
 		}
 		
-		boolean foundGoal = false;
-		
-		if(bestSquare.x == finish.x && bestSquare.y == finish.y) foundGoal = true;
-
+		if(bestWeight == 100) foundGoal = true;
 		
 		// Now we know which square we are going to progress to
 		move(bestSquare);
@@ -273,6 +281,7 @@ public class Maze implements MouseListener, ActionListener{
 
 		if(e.getSource() == restart){
 			board.changeActive(new Square(start.x, start.y));
+			board.previousActive = null;
 			this.currentSquare = board.currentSquare;
 
 			inProgress = false;

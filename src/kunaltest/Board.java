@@ -19,6 +19,7 @@ public class Board extends JPanel{
 
 	Square[][] grid;
 	Square currentSquare;
+	Square previousActive;
 
 	public Board(int width, int height, Point start, Point finish){
 
@@ -37,9 +38,13 @@ public class Board extends JPanel{
 					grid[i][j].start = true; 
 					grid[i][j].active = true;
 					currentSquare = grid[i][j];
+					grid[i][j].setColor(Color.GREEN);
 				}
 
-				if(i == finish.x && j == finish.y) grid[i][j].end = true;
+				if(i == finish.x && j == finish.y){
+					grid[i][j].end = true;
+					grid[i][j].setColor(Color.RED);
+				}
 
 				if(i != width - 1){
 					if(grid[i][j].end == true)
@@ -78,13 +83,14 @@ public class Board extends JPanel{
 		for(int i = 0; i < width; i++){ 
 			for(int j = 0; j < height; j++){
 				if(grid[i][j].end == true){
-					grid[i][j].drawSquare(g, squareSize, Color.RED);
+					grid[i][j].drawSquare(g, squareSize);
 				}else if(grid[i][j].start == true){
-					grid[i][j].drawSquare(g, squareSize, Color.GREEN);
+					grid[i][j].drawSquare(g, squareSize);
 				}else if(grid[i][j].wall == false){
-					grid[i][j].drawSquare(g, squareSize, null);
+					grid[i][j].drawSquare(g, squareSize);
 				}else{
-					grid[i][j].drawSquare(g, squareSize, Color.BLACK);
+					grid[i][j].setColor(Color.BLACK);
+					grid[i][j].drawSquare(g, squareSize);
 				}
 
 				if(grid[i][j].active == true){
@@ -100,6 +106,7 @@ public class Board extends JPanel{
 	}
 	
 	public void changeActive(Square s){
+		previousActive = currentSquare;
 		grid[currentSquare.x][currentSquare.y].active = false;
 		grid[s.x][s.y].active = true;
 		currentSquare = grid[s.x][s.y];

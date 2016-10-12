@@ -9,6 +9,7 @@ public class Square{
 
 	int x, y;
 	int width = 30; // TODO: Change this hardcoded stuff
+	Color c;
 	ConcurrentHashMap<Square, Integer> adjacent;
 	boolean wall = false;
 	
@@ -22,7 +23,7 @@ public class Square{
 		adjacent = new ConcurrentHashMap<Square, Integer>();
 	}
 	
-	public void drawSquare(Graphics g, int squareSize, Color c){
+	public void drawSquare(Graphics g, int squareSize){
 		if(c == null){
 			g.drawRect(x*width, y*width, width, width);
 		}else{
@@ -46,5 +47,9 @@ public class Square{
 		
 		Square s = (Square) o;
 		return this.x == s.x && this.y == s.y;
+	}
+	
+	public void setColor(Color c){
+		this.c = c;
 	}
 }
