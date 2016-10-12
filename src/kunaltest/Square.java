@@ -3,12 +3,13 @@ package kunaltest;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Square{
 
 	int x, y;
 	int width = 30; // TODO: Change this hardcoded stuff
-	HashMap<Square, Integer> adjacent;
+	ConcurrentHashMap<Square, Integer> adjacent;
 	boolean wall = false;
 	
 	boolean end = false;
@@ -18,7 +19,7 @@ public class Square{
 	public Square(int x, int y){
 		this.x = x;
 		this.y = y;
-		adjacent = new HashMap<Square, Integer>();
+		adjacent = new ConcurrentHashMap<Square, Integer>();
 	}
 	
 	public void drawSquare(Graphics g, int squareSize, Color c){
@@ -38,5 +39,12 @@ public class Square{
 	
 	public String toString(){
 		return "X: " + x + " Y: " + y;
+	}
+	
+	@Override
+	public boolean equals(Object o){
+		
+		Square s = (Square) o;
+		return this.x == s.x && this.y == s.y;
 	}
 }

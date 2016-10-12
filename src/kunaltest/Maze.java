@@ -6,11 +6,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -27,6 +28,7 @@ public class Maze implements MouseListener, ActionListener{
 	Square[][] grid;
 	Square currentSquare;
 	JButton startGame;
+	JButton endGame;
 	
 //    BufferedImage buffer;
 	Timer t;
@@ -57,7 +59,9 @@ public class Maze implements MouseListener, ActionListener{
 		main.setContentPane(board);
 
 		startGame = new JButton("Start");
+		endGame = new JButton("End");
 		main.add(startGame);
+		main.add(endGame);
 		
 		main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		main.setSize(1000, 1000);
@@ -66,6 +70,7 @@ public class Maze implements MouseListener, ActionListener{
 
 		board.addMouseListener(this);
 		startGame.addActionListener(this);
+		endGame.addActionListener(this);
 
 	}
 	
@@ -127,6 +132,8 @@ public class Maze implements MouseListener, ActionListener{
 
 	@Override
 	public void mousePressed(MouseEvent e) {
+		if(inProgress) return;
+		
 		for(int i = 0; i < width; i++){
 			for(int j = 0; j < height; j++){
 				if(e.getX() > i*squareSize && e.getX() < i*squareSize + squareSize 
@@ -135,11 +142,9 @@ public class Maze implements MouseListener, ActionListener{
 
 					if(board.grid[i][j].wall == false  && board.grid[i][j].end == false && board.grid[i][j].start == false){
 						board.grid[i][j].wall = true;
-						//for(int k = 0; k < board.grid[i][j].adjacent.size(); k++){
-						for(Map.Entry<Square, Integer> entry: board.grid[i][j].adjacent.entrySet()){
-							entry.getKey().adjacent.remove(board.grid[i][j]);
-							//System.out.println("We removed: " + board.grid[i][j] + " from: " + entry.getKey());
-						}
+								
+						board.removeAdjacentSquare(board.grid[i][j]);
+					
 						//}
 						/*for(int k = 0; k < width; k++){
 							for(int l = 0; l < height; l++){
@@ -157,6 +162,8 @@ public class Maze implements MouseListener, ActionListener{
 				}
 			}
 		}
+		
+		//System.out.println(board.grid[0][0].adjacent);
 
 	}
 
@@ -188,6 +195,10 @@ public class Maze implements MouseListener, ActionListener{
 			}
 		}
 		
+		if(e.getSource() == endGame){
+			t.stop();
+			inProgress = false;
+		}
 		if(e.getSource() == t){
 			search();
 		}

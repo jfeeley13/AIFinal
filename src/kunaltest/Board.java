@@ -107,5 +107,16 @@ public class Board extends JPanel{
 		currentSquare = grid[s.x][s.y];
 		SwingUtilities.getRoot(this).repaint();
 	}
-
+	
+	public void removeAdjacentSquare(Square s){
+		for(int i = 0; i < width; i++){
+			for(int j = 0; j < height; j++){
+				for(Map.Entry<Square, Integer> e : grid[i][j].adjacent.entrySet()){
+					if(e.getKey().x == s.x && e.getKey().y == s.y){
+						grid[i][j].adjacent.remove(e.getKey());
+					}
+				}
+			}
+		}
+	}
 }
