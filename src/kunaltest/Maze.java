@@ -36,6 +36,10 @@ public class Maze implements MouseListener, ActionListener{
 	JButton delayedSearch;
 	JTextField delay;
 	JButton endGame;
+	JButton restart;
+
+	Point start;
+	Point finish;
 
 	//    BufferedImage buffer;
 	Timer t = null;
@@ -44,10 +48,13 @@ public class Maze implements MouseListener, ActionListener{
 
 	public Maze(int width, int height, Point start, Point finish){
 
+		this.start = start;
+		this.finish = finish;
+
 		main = new JFrame();
 		this.width = width;
 		this.height = height;
-		
+
 		JPanel p = new JPanel();
 
 		// this.buffer = new BufferedImage(1000, 1000, BufferedImage.TYPE_INT_ARGB);
@@ -66,26 +73,31 @@ public class Maze implements MouseListener, ActionListener{
 		currentSquare = board.currentSquare;
 
 		main.setContentPane(board);
-		
+
 
 
 		instantaneousSearch = new JButton("Instantaneous Search");
-		instantaneousSearch.setBounds(362, 11, 188, 23);
+		instantaneousSearch.setBounds(362, 11, 181, 23);
 		delayedSearch = new JButton("Delayed Search");
-		delayedSearch.setBounds(362, 49, 139, 23);
+		delayedSearch.setBounds(362, 45, 181, 23);
 		delay = new JTextField("20");
-		delay.setBounds(520, 50, 100, 20);
+		delay.setBounds(555, 46, 100, 20);
 		delay.setPreferredSize(new Dimension(100, 20));
 		endGame = new JButton("End");
-		endGame.setBounds(362, 90, 83, 23);
+		endGame.setBounds(362, 79, 181, 23);
 		board.setLayout(null);
 
-		
+
 		board.add(instantaneousSearch);
 		board.add(delayedSearch);
 		board.add(delay);
 		board.add(endGame);
-		
+
+		restart = new JButton("Restart");
+		restart.addActionListener(this);
+		restart.setBounds(362, 113, 181, 23);
+		board.add(restart);
+
 		//main.add(p);
 
 		main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -251,6 +263,16 @@ public class Maze implements MouseListener, ActionListener{
 			///	t.stop();
 			inProgress = false;
 			if(t != null) t.stop();
+		}
+
+		if(e.getSource() == restart){
+			board.changeActive(new Square(start.x, start.y));
+			this.currentSquare = board.currentSquare;
+
+			inProgress = false;
+			if(t != null) t.stop();
+			main.repaint();
+
 		}
 		if(e.getSource() == t){
 			search();
