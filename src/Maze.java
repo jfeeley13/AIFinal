@@ -108,17 +108,19 @@ public class Maze implements MouseListener, ActionListener {
 			}
 		}
 
-		//System.out.println(currentSquare.adjacent);
+
+		// TODO: What about a case in which two weights are the same and NOT 0? Gotta account for this
+		
 		// Weights are all the same
 		if (bestWeight == 0) {
-			//System.out.println(keys.size());
 
 			// TODO: What if adjacency list is empty?
 			bestSquare = board.currentSquare.adjacent.get(r.nextInt(board.currentSquare.adjacent.size()));
 
 		} else {
-			// Set the weight from the previous current to the current square (which leads to the goal) also to be 100!
 			// TODO: IF PREVIOUS ACTIVE IS NULL?
+			
+			// Basically this is just a complicated way of adding a weight to the square that is before the goal
 			for (Square adjacent : board.previousActive.adjacent) {
 				if (adjacent.x == board.currentSquare.x && adjacent.y == board.currentSquare.y) {
 					if (board.grid[board.currentSquare.x][board.currentSquare.y].c != Color.PINK){
@@ -127,7 +129,7 @@ public class Maze implements MouseListener, ActionListener {
 						System.out.println("Previous active: " + board.previousActive);
 
 						System.out.println("Setting pink to: " + board.currentSquare.x + ", " + board.currentSquare.y);
-						adjacent.weight = 80;
+						board.grid[board.currentSquare.x][board.currentSquare.y].weight = 80; // USING ARBITRARY VALUE 80, change this to a value computed by QLearning algorithm
 						board.grid[board.currentSquare.x][board.currentSquare.y].setColor(Color.PINK);
 					}
 				}
