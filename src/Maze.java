@@ -7,16 +7,20 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Random;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JTextField;
+import javax.swing.Timer;
+import javax.swing.WindowConstants;
 
 public class Maze implements MouseListener, ActionListener {
-//	Square[][] grid;
+	//	Square[][] grid;
 	private int width, height;
 	private Board board;
 
-	
+
 	private JFrame main;
-	
+
 	private JButton instantaneousSearch;
 	private JButton delayedSearch;
 	private JTextField delay;
@@ -24,30 +28,30 @@ public class Maze implements MouseListener, ActionListener {
 	private JButton restart;
 
 	private Point start;
-//	private Point finish;
+	//	private Point finish;
 
-//	boolean goal = false;
+	//	boolean goal = false;
 	private Timer t = null;
 
 	private boolean inProgress = false;
 
 	public Maze(int width, int height, Point start, Point finish) {
 		this.start = start;
-//		this.finish = finish;
-		
+		//		this.finish = finish;
+
 		this.width = width;
 		this.height = height;
-		
+
 		// Set up the board
 		board = new Board(width, height, start, finish);
 
 		initializeGraphics();
 	}
-	
+
 	// For the most part this can be ignored, just initializing graphics objects
 	private void initializeGraphics() {
 		main = new JFrame();
-		
+
 		main.setContentPane(board);
 
 		instantaneousSearch = new JButton("Instantaneous Search");
@@ -94,47 +98,64 @@ public class Maze implements MouseListener, ActionListener {
 
 	// TODO: Maybe make this a static method in some QLearning class
 	private boolean search() {
-		int bestWeight = 0;
+		double bestWeight = board.currentSquare.weight;
+		System.out.println("current: " + bestWeight);
+		if(board.previousActive != null) System.out.println("previous: " + board.previousActive.weight);
 		Square bestSquare = null;
+		double stepSize = 0.1;
 
-		Random r = new Random();
+		int r = -1;
 
-		//	while(true){
-		// Check the nodes with the best weight
-		for(Square s : board.currentSquare.adjacent){
-			if(board.grid[s.x][s.y].weight > bestWeight){
-				bestWeight = board.grid[s.x][s.y].weight;
-				bestSquare = board.grid[s.x][s.y];
+		Random rand = new Random();
+
+		boolean greedy = true; // TODO: Based on some exploration probability we should determine this
+
+		if(greedy){
+			//	while(true){
+			// Check the nodes with the best weight
+			for(Square s : board.currentSquare.adjacent){
+				// We are going to keep track of the square with the best weight (and its value)
+				if(board.grid[s.x][s.y].weight > bestWeight){
+					bestWeight = board.grid[s.x][s.y].weight;
+					bestSquare = board.grid[s.x][s.y];
+				}
 			}
+		}else{
+			bestSquare = board.currentSquare.adjacent.get(rand.nextInt(board.currentSquare.adjacent.size()));
 		}
 
-
 		// TODO: What about a case in which two weights are the same and NOT 0? Gotta account for this
-		
+
 		// Weights are all the same
 		if (bestWeight == 0) {
 
 			// TODO: What if adjacency list is empty?
-			bestSquare = board.currentSquare.adjacent.get(r.nextInt(board.currentSquare.adjacent.size()));
+			bestSquare = board.currentSquare.adjacent.get(rand.nextInt(board.currentSquare.adjacent.size()));
 
-		} else {
-			// TODO: IF PREVIOUS ACTIVE IS NULL?
+		}
+		// TODO: IF PREVIOUS ACTIVE IS NULL?
+
+		if(board.previousActive != null){ // If we have made our first move
 			
-			// Basically this is just a complicated way of adding a weight to the square that is before the goal
+			// Basically this is just a complicated way of adding a weight to a square that was just occupied
 			for (Square adjacent : board.previousActive.adjacent) {
 				if (adjacent.x == board.currentSquare.x && adjacent.y == board.currentSquare.y) {
-					if (board.grid[board.currentSquare.x][board.currentSquare.y].c != Color.PINK){
+					//if (board.grid[board.currentSquare.x][board.currentSquare.y].c != Color.PINK){
 						System.out.println();
 
 						System.out.println("Previous active: " + board.previousActive);
 
 						System.out.println("Setting pink to: " + board.currentSquare.x + ", " + board.currentSquare.y);
-						board.grid[board.currentSquare.x][board.currentSquare.y].weight = 80; // USING ARBITRARY VALUE 80, change this to a value computed by QLearning algorithm
-						board.grid[board.currentSquare.x][board.currentSquare.y].setColor(Color.PINK);
-					}
+
+						// TODO: Ill work on simplifying this, basically just setting the weight of the previous square using algorithm
+						double currentWeight = board.grid[board.currentSquare.x][board.currentSquare.y].weight;
+						board.grid[board.currentSquare.x][board.currentSquare.y].weight = currentWeight + (stepSize * (r + (bestWeight - currentWeight))); // USING ARBITRARY VALUE 80, change this to a value computed by QLearning algorithm
+						//board.grid[board.currentSquare.x][board.currentSquare.y].setColor(Color.PINK);
+					//}
 				}
-			}			
+			}	
 		}
+
 
 		if (bestWeight == 100) {
 			return true;
@@ -164,7 +185,7 @@ public class Maze implements MouseListener, ActionListener {
 	@Override
 	public void mousePressed(MouseEvent e) {
 		if(inProgress) return;
-		
+
 		// If a square is clicked, turn it into a wall (maybe we can find a different system for creating mazes, such as through text file though)
 		for(int i = 0; i < width; i++){
 			for(int j = 0; j < height; j++){
@@ -205,7 +226,7 @@ public class Maze implements MouseListener, ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		
+
 		// This search completes as fast as it can
 		if(e.getSource() == instantaneousSearch){
 			if(!inProgress){
@@ -241,7 +262,7 @@ public class Maze implements MouseListener, ActionListener {
 			main.repaint();
 
 		}
-		
+
 		// On each timer tick perform a move, unless we have reached the goal
 		if(e.getSource() == t){
 			if(search()) t.stop();

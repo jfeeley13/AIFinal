@@ -7,7 +7,7 @@ class Square {
 	//int SIZE = 30; // TODO: Change this hardcoded stuff
 	Color c;
 	CopyOnWriteArrayList<Square> adjacent;
-	int weight = 0;
+	double weight = 0;
 	boolean wall = false;
 	
 	static final int SIZE = 30;
@@ -37,6 +37,9 @@ class Square {
 		g.fillOval(x*SIZE, y*SIZE, SIZE, SIZE);
 	}
 	
+	void drawWeight(Graphics g){
+		g.drawString(this.weight + "", x*SIZE, y*SIZE);
+	}
 	@Override
 	public String toString(){
 		return "X: " + x + " Y: " + y;

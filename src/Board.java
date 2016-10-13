@@ -72,6 +72,8 @@ public class Board extends JPanel{
 				if(grid[i][j].active == true){
 					grid[i][j].drawCircle(g);
 				}
+				
+				grid[i][j].drawWeight(g);
 			}
 		}
 	}
