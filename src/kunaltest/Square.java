@@ -2,12 +2,9 @@ package kunaltest;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Square{
-
+class Square {
 	int x, y;
 	//int SIZE = 30; // TODO: Change this hardcoded stuff
 	Color c;
@@ -21,23 +18,23 @@ public class Square{
 	boolean start = false;
 	boolean active = false;
 	
-	public Square(int x, int y){
+	Square(int x, int y) {
 		this.x = x;
 		this.y = y;
 		adjacent = new CopyOnWriteArrayList<Square>();
 	}
 	
-	public void drawSquare(Graphics g){
-		if(c == null){
+	void drawSquare(Graphics g) {
+		if (c == null) {
 			g.drawRect(x*SIZE, y*SIZE, SIZE, SIZE);
-		}else{
+		} else {
 			g.setColor(c);
 			g.fillRect(x*SIZE, y*SIZE, SIZE, SIZE);
 		}
 		g.setColor(Color.BLACK);
 	}
 	
-	public void drawCircle(Graphics g){
+	void drawCircle(Graphics g) {
 		g.setColor(Color.BLUE);
 		g.fillOval(x*SIZE, y*SIZE, SIZE, SIZE);
 	}
@@ -48,23 +45,23 @@ public class Square{
 	}
 	
 	@Override
-	public boolean equals(Object o){
-		
+	public boolean equals(Object o) {
+		// Todo check if square?
 		Square s = (Square) o;
 		return this.x == s.x && this.y == s.y;
 	}
 	
-	public void setColor(Color c){
+	void setColor(Color c){
 		this.c = c;
 	}
 	
-	public void setStart(){
+	void setStart() {
 		this.start = true; 
 		this.active = true;
 		this.setColor(Color.GREEN);
 	}
 	
-	public void setEnd(){
+	void setEnd() {
 		this.end = true;
 		this.setColor(Color.RED);
 		this.weight = 100;

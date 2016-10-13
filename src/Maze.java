@@ -1,5 +1,5 @@
 /**
- * Created by Jordan on 10/10/16.
+ * Created by Jordan on 10/10/16
  */
 /******************************************************************************
  *  Compilation:  javac Maze.java
@@ -47,7 +47,7 @@ public class Maze {
         }
 
 
-        // initialze all walls as present
+        // initialize all walls as present
         north = new boolean[n+2][n+2];
         east  = new boolean[n+2][n+2];
         south = new boolean[n+2][n+2];
@@ -104,7 +104,6 @@ public class Maze {
     // generate the maze starting from lower left
     private void generate() {
         generate(1, 1);
-
 /*
         // delete some random walls
         for (int i = 0; i < n; i++) {
@@ -122,8 +121,6 @@ public class Maze {
 */
 
     }
-
-
 
     // solve the maze using depth-first search
     private void solve(int x, int y) {
@@ -153,7 +150,7 @@ public class Maze {
     }
 
     // solve the maze starting from the start state
-    public void solve() {
+    void solve() {
         for (int x = 1; x <= n; x++)
             for (int y = 1; y <= n; y++)
                 visited[x][y] = false;
@@ -162,7 +159,7 @@ public class Maze {
     }
 
     // draw the maze
-    public void draw() {
+    void draw() {
         StdDraw.setPenColor(StdDraw.RED);
         StdDraw.filledCircle(n/2.0 + 0.5, n/2.0 + 0.5, 0.375);
         StdDraw.filledCircle(1.5, 1.5, 0.375);
@@ -180,8 +177,6 @@ public class Maze {
         StdDraw.pause(1000);
     }
 
-
-
     // a test client
     public static void main(String[] args) {
         int n = Integer.parseInt(args[0]);
@@ -190,6 +185,4 @@ public class Maze {
         maze.draw();
         maze.solve();
     }
-
 }
-

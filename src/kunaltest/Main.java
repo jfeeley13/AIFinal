@@ -3,8 +3,6 @@ package kunaltest;
 import java.awt.Point;
 
 public class Main {
-
-	
 	public static void main(String[] args){
 		int boardHeight = 10;
 		int boardWidth = 10;

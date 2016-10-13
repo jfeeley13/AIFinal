@@ -9,38 +9,33 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Random;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JTextField;
-import javax.swing.Timer;
+import javax.swing.*;
 
-public class Maze implements MouseListener, ActionListener{
-	
-	Square[][] grid;
-	int width, height;
-	Board board;
+public class Maze implements MouseListener, ActionListener {
+//	Square[][] grid;
+	private int width, height;
+	private Board board;
 
 	
-	JFrame main;
+	private JFrame main;
 	
-	JButton instantaneousSearch;
-	JButton delayedSearch;
-	JTextField delay;
-	JButton endGame;
-	JButton restart;
+	private JButton instantaneousSearch;
+	private JButton delayedSearch;
+	private JTextField delay;
+	private JButton endGame;
+	private JButton restart;
 
-	Point start;
-	Point finish;
+	private Point start;
+//	private Point finish;
 
-	boolean goal = false;
-	Timer t = null;
+//	boolean goal = false;
+	private Timer t = null;
 
-	boolean inProgress = false;
+	private boolean inProgress = false;
 
-	public Maze(int width, int height, Point start, Point finish){
-
+	public Maze(int width, int height, Point start, Point finish) {
 		this.start = start;
-		this.finish = finish;
+//		this.finish = finish;
 		
 		this.width = width;
 		this.height = height;
@@ -49,11 +44,10 @@ public class Maze implements MouseListener, ActionListener{
 		board = new Board(width, height, start, finish);
 
 		initializeGraphics();
-
 	}
 	
 	// For the most part this can be ignored, just initializing graphics objects
-	private void initializeGraphics(){
+	private void initializeGraphics() {
 		main = new JFrame();
 		
 		main.setContentPane(board);
@@ -79,7 +73,7 @@ public class Maze implements MouseListener, ActionListener{
 		restart.setBounds(362, 113, 181, 23);
 		board.add(restart);
 
-		main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		main.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		main.setSize(1000, 1000);
 		main.setVisible(true);
 
@@ -90,21 +84,18 @@ public class Maze implements MouseListener, ActionListener{
 	}
 
 	// Initialize and start a timer
-	public void delayedSearch(int delay){
+	private void delayedSearch(int delay) {
 		t = new Timer(delay, this);
 		t.start();
 	}
 
-	public void noDelaySearch(){
-
+	private void noDelaySearch() {
+		// TODO explain the "while"
 		while(!search()){} // Just keep going until we reach the goal
-
 	}
 
 	// TODO: Maybe make this a static method in some QLearning class
-	public boolean search(){
-
-		boolean foundGoal = false;
+	private boolean search() {
 		int bestWeight = 0;
 		Square bestSquare = null;
 
@@ -121,19 +112,18 @@ public class Maze implements MouseListener, ActionListener{
 
 		//System.out.println(currentSquare.adjacent);
 		// Weights are all the same
-		if(bestWeight == 0){
+		if (bestWeight == 0) {
 			//System.out.println(keys.size());
 
 			// TODO: What if adjacency list is empty?
-			Square randomSquare = board.currentSquare.adjacent.get(r.nextInt(board.currentSquare.adjacent.size()));
-			bestSquare = randomSquare;
+			bestSquare = board.currentSquare.adjacent.get(r.nextInt(board.currentSquare.adjacent.size()));
 
-		}else{
+		} else {
 			// Set the weight from the previous current to the current square (which leads to the goal) also to be 100!
 			// TODO: IF PREVIOUS ACTIVE IS NULL?
-			for(Square adjacent : board.previousActive.adjacent){
-				if(adjacent.x == board.currentSquare.x && adjacent.y == board.currentSquare.y){
-					if(board.grid[board.currentSquare.x][board.currentSquare.y].c != Color.PINK){
+			for (Square adjacent : board.previousActive.adjacent) {
+				if (adjacent.x == board.currentSquare.x && adjacent.y == board.currentSquare.y) {
+					if (board.grid[board.currentSquare.x][board.currentSquare.y].c != Color.PINK){
 						System.out.println();
 
 						System.out.println("Previous active: " + board.previousActive);
@@ -146,16 +136,15 @@ public class Maze implements MouseListener, ActionListener{
 			}			
 		}
 
-		if(bestWeight == 100){
-			foundGoal = true;
-			return foundGoal;
+		if (bestWeight == 100) {
+			return true;
 		}
 
 		// Now we know which square we are going to progress to
 		move(bestSquare);
 		main.repaint();
 
-		return foundGoal;
+		return false;
 	}
 
 	private void move(Square s){
@@ -184,7 +173,7 @@ public class Maze implements MouseListener, ActionListener{
 						&& e.getY() > j*Square.SIZE && e.getY() < j*Square.SIZE + Square.SIZE){
 					System.out.println("click detected in: " + i + ", " + j);
 
-					if(board.grid[i][j].wall == false  && board.grid[i][j].end == false && board.grid[i][j].start == false){
+					if(!board.grid[i][j].wall && !board.grid[i][j].end && !board.grid[i][j].start){
 						board.grid[i][j].wall = true;
 
 						board.removeAdjacentSquare(board.grid[i][j]);
@@ -255,7 +244,7 @@ public class Maze implements MouseListener, ActionListener{
 		
 		// On each timer tick perform a move, unless we have reached the goal
 		if(e.getSource() == t){
-			if(search() == true) t.stop();
+			if(search()) t.stop();
 		}
 	}
 }
