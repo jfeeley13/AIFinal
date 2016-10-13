@@ -1,188 +1,248 @@
-/**
- * Created by Jordan on 10/10/16
- */
-/******************************************************************************
- *  Compilation:  javac Maze.java
- *  Execution:    java Maze.java n
- *  Dependencies: StdDraw.java
- *
- *  Generates a perfect n-by-n maze using depth-first search with a stack.
- *
- *  % java Maze 62
- *
- *  % java Maze 61
- *
- *  Note: this program generalizes nicely to finding a random tree
- *        in a graph.
- *
- ******************************************************************************/
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.Random;
 
-public class Maze {
-    private int n;                 // dimension of maze
-    private boolean[][] north;     // is there a wall to north of cell i, j
-    private boolean[][] east;
-    private boolean[][] south;
-    private boolean[][] west;
-    private boolean[][] visited;
-    private boolean done = false;
+import javax.swing.*;
 
-    public Maze(int n) {
-        this.n = n;
-        StdDraw.setXscale(0, n+2);
-        StdDraw.setYscale(0, n+2);
-        init();
-        generate();
-    }
+public class Maze implements MouseListener, ActionListener {
+//	Square[][] grid;
+	private int width, height;
+	private Board board;
 
-    private void init() {
-        // initialize border cells as already visited
-        visited = new boolean[n+2][n+2];
-        for (int x = 0; x < n+2; x++) {
-            visited[x][0] = true;
-            visited[x][n+1] = true;
-        }
-        for (int y = 0; y < n+2; y++) {
-            visited[0][y] = true;
-            visited[n+1][y] = true;
-        }
+	
+	private JFrame main;
+	
+	private JButton instantaneousSearch;
+	private JButton delayedSearch;
+	private JTextField delay;
+	private JButton endGame;
+	private JButton restart;
+
+	private Point start;
+//	private Point finish;
+
+//	boolean goal = false;
+	private Timer t = null;
+
+	private boolean inProgress = false;
+
+	public Maze(int width, int height, Point start, Point finish) {
+		this.start = start;
+//		this.finish = finish;
+		
+		this.width = width;
+		this.height = height;
+		
+		// Set up the board
+		board = new Board(width, height, start, finish);
+
+		initializeGraphics();
+	}
+	
+	// For the most part this can be ignored, just initializing graphics objects
+	private void initializeGraphics() {
+		main = new JFrame();
+		
+		main.setContentPane(board);
+
+		instantaneousSearch = new JButton("Instantaneous Search");
+		instantaneousSearch.setBounds(362, 11, 181, 23);
+		delayedSearch = new JButton("Delayed Search");
+		delayedSearch.setBounds(362, 45, 181, 23);
+		delay = new JTextField("20");
+		delay.setBounds(555, 46, 100, 20);
+		delay.setPreferredSize(new Dimension(100, 20));
+		endGame = new JButton("Pause");
+		endGame.setBounds(362, 79, 181, 23);
+		board.setLayout(null);
+
+		board.add(instantaneousSearch);
+		board.add(delayedSearch);
+		board.add(delay);
+		board.add(endGame);
+
+		restart = new JButton("Reset");
+		restart.addActionListener(this);
+		restart.setBounds(362, 113, 181, 23);
+		board.add(restart);
+
+		main.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		main.setSize(1000, 1000);
+		main.setVisible(true);
+
+		board.addMouseListener(this);
+		instantaneousSearch.addActionListener(this);
+		delayedSearch.addActionListener(this);
+		endGame.addActionListener(this);
+	}
+
+	// Initialize and start a timer
+	private void delayedSearch(int delay) {
+		t = new Timer(delay, this);
+		t.start();
+	}
+
+	private void noDelaySearch() {
+		// TODO explain the "while"
+		while(!search()){} // Just keep going until we reach the goal
+	}
+
+	// TODO: Maybe make this a static method in some QLearning class
+	private boolean search() {
+		int bestWeight = 0;
+		Square bestSquare = null;
+
+		Random r = new Random();
+
+		//	while(true){
+		// Check the nodes with the best weight
+		for(Square s : board.currentSquare.adjacent){
+			if(board.grid[s.x][s.y].weight > bestWeight){
+				bestWeight = board.grid[s.x][s.y].weight;
+				bestSquare = board.grid[s.x][s.y];
+			}
+		}
+
+		//System.out.println(currentSquare.adjacent);
+		// Weights are all the same
+		if (bestWeight == 0) {
+			//System.out.println(keys.size());
+
+			// TODO: What if adjacency list is empty?
+			bestSquare = board.currentSquare.adjacent.get(r.nextInt(board.currentSquare.adjacent.size()));
+
+		} else {
+			// Set the weight from the previous current to the current square (which leads to the goal) also to be 100!
+			// TODO: IF PREVIOUS ACTIVE IS NULL?
+			for (Square adjacent : board.previousActive.adjacent) {
+				if (adjacent.x == board.currentSquare.x && adjacent.y == board.currentSquare.y) {
+					if (board.grid[board.currentSquare.x][board.currentSquare.y].c != Color.PINK){
+						System.out.println();
+
+						System.out.println("Previous active: " + board.previousActive);
+
+						System.out.println("Setting pink to: " + board.currentSquare.x + ", " + board.currentSquare.y);
+						adjacent.weight = 80;
+						board.grid[board.currentSquare.x][board.currentSquare.y].setColor(Color.PINK);
+					}
+				}
+			}			
+		}
+
+		if (bestWeight == 100) {
+			return true;
+		}
+
+		// Now we know which square we are going to progress to
+		move(bestSquare);
+		main.repaint();
+
+		return false;
+	}
+
+	private void move(Square s){
+
+		// Change the active square to the one we want to move to
+		board.changeActive(s);
+		//this.currentSquare = board.currentSquare;
+
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
 
 
-        // initialize all walls as present
-        north = new boolean[n+2][n+2];
-        east  = new boolean[n+2][n+2];
-        south = new boolean[n+2][n+2];
-        west  = new boolean[n+2][n+2];
-        for (int x = 0; x < n+2; x++) {
-            for (int y = 0; y < n+2; y++) {
-                north[x][y] = true;
-                east[x][y]  = true;
-                south[x][y] = true;
-                west[x][y]  = true;
-            }
-        }
-    }
+	}
 
+	@Override
+	public void mousePressed(MouseEvent e) {
+		if(inProgress) return;
+		
+		// If a square is clicked, turn it into a wall (maybe we can find a different system for creating mazes, such as through text file though)
+		for(int i = 0; i < width; i++){
+			for(int j = 0; j < height; j++){
+				// Which square is clicked -- just trust that this works
+				if(e.getX() > i*Square.SIZE && e.getX() < i*Square.SIZE + Square.SIZE 
+						&& e.getY() > j*Square.SIZE && e.getY() < j*Square.SIZE + Square.SIZE){
+					System.out.println("click detected in: " + i + ", " + j);
 
-    // generate the maze
-    private void generate(int x, int y) {
-        visited[x][y] = true;
+					if(!board.grid[i][j].wall && !board.grid[i][j].end && !board.grid[i][j].start){
+						board.grid[i][j].wall = true;
 
-        // while there is an unvisited neighbor
-        while (!visited[x][y+1] || !visited[x+1][y] || !visited[x][y-1] || !visited[x-1][y]) {
+						board.removeAdjacentSquare(board.grid[i][j]);
+					}
 
-            // pick random neighbor (could use Knuth's trick instead)
-            while (true) {
-                double r = StdRandom.uniform(4);
-                if (r == 0 && !visited[x][y+1]) {
-                    north[x][y] = false;
-                    south[x][y+1] = false;
-                    generate(x, y + 1);
-                    break;
-                }
-                else if (r == 1 && !visited[x+1][y]) {
-                    east[x][y] = false;
-                    west[x+1][y] = false;
-                    generate(x+1, y);
-                    break;
-                }
-                else if (r == 2 && !visited[x][y-1]) {
-                    south[x][y] = false;
-                    north[x][y-1] = false;
-                    generate(x, y-1);
-                    break;
-                }
-                else if (r == 3 && !visited[x-1][y]) {
-                    west[x][y] = false;
-                    east[x-1][y] = false;
-                    generate(x-1, y);
-                    break;
-                }
-            }
-        }
-    }
+					main.repaint();
+				}
+			}
+		}
+	}
 
-    // generate the maze starting from lower left
-    private void generate() {
-        generate(1, 1);
-/*
-        // delete some random walls
-        for (int i = 0; i < n; i++) {
-            int x = 1 + StdRandom.uniform(n-1);
-            int y = 1 + StdRandom.uniform(n-1);
-            north[x][y] = south[x][y+1] = false;
-        }
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
 
-        // add some random walls
-        for (int i = 0; i < 10; i++) {
-            int x = n/2 + StdRandom.uniform(n/2);
-            int y = n/2 + StdRandom.uniform(n/2);
-            east[x][y] = west[x+1][y] = true;
-        }
-*/
+	}
 
-    }
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
 
-    // solve the maze using depth-first search
-    private void solve(int x, int y) {
-        if (x == 0 || y == 0 || x == n+1 || y == n+1) return;
-        if (done || visited[x][y]) return;
-        visited[x][y] = true;
+	}
 
-        StdDraw.setPenColor(StdDraw.BLUE);
-        StdDraw.filledCircle(x + 0.5, y + 0.5, 0.25);
-        StdDraw.show();
-        StdDraw.pause(30);
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
 
-        // reached middle
-        if (x == n/2 && y == n/2) done = true;
+	}
 
-        if (!north[x][y]) solve(x, y + 1);
-        if (!east[x][y])  solve(x + 1, y);
-        if (!south[x][y]) solve(x, y - 1);
-        if (!west[x][y])  solve(x - 1, y);
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		
+		// This search completes as fast as it can
+		if(e.getSource() == instantaneousSearch){
+			if(!inProgress){
+				inProgress = true;
+				noDelaySearch();
+				//this.search();
+				//t.start();
+			}
+		}
 
-        if (done) return;
+		// This search uses a swing timer to visually display the path being taken
+		if(e.getSource() == delayedSearch){
+			if(!inProgress){
+				inProgress = true;
+				delayedSearch(Integer.parseInt(delay.getText())); // Let the user enter in the delay they want to use in the JTextField
+			}
+		}
 
-        StdDraw.setPenColor(StdDraw.GRAY);
-        StdDraw.filledCircle(x + 0.5, y + 0.5, 0.25);
-        StdDraw.show();
-        StdDraw.pause(30);
-    }
+		// Kind of misleading, this "pauses" the search
+		if(e.getSource() == endGame){
+			inProgress = false;
+			if(t != null) t.stop();
+		}
 
-    // solve the maze starting from the start state
-    void solve() {
-        for (int x = 1; x <= n; x++)
-            for (int y = 1; y <= n; y++)
-                visited[x][y] = false;
-        done = false;
-        solve(1, 1);
-    }
+		// This resets the search to the starting square and stops the search
+		if(e.getSource() == restart){
+			board.changeActive(new Square(start.x, start.y));
+			board.previousActive = null;
+			//currentSquare = board.currentSquare;
 
-    // draw the maze
-    void draw() {
-        StdDraw.setPenColor(StdDraw.RED);
-        StdDraw.filledCircle(n/2.0 + 0.5, n/2.0 + 0.5, 0.375);
-        StdDraw.filledCircle(1.5, 1.5, 0.375);
+			inProgress = false;
+			if(t != null) t.stop();
+			main.repaint();
 
-        StdDraw.setPenColor(StdDraw.BLACK);
-        for (int x = 1; x <= n; x++) {
-            for (int y = 1; y <= n; y++) {
-                if (south[x][y]) StdDraw.line(x, y, x+1, y);
-                if (north[x][y]) StdDraw.line(x, y+1, x+1, y+1);
-                if (west[x][y])  StdDraw.line(x, y, x, y+1);
-                if (east[x][y])  StdDraw.line(x+1, y, x+1, y+1);
-            }
-        }
-        StdDraw.show();
-        StdDraw.pause(1000);
-    }
-
-    // a test client
-    public static void main(String[] args) {
-        int n = Integer.parseInt(args[0]);
-        Maze maze = new Maze(n);
-        StdDraw.enableDoubleBuffering();
-        maze.draw();
-        maze.solve();
-    }
+		}
+		
+		// On each timer tick perform a move, unless we have reached the goal
+		if(e.getSource() == t){
+			if(search()) t.stop();
+		}
+	}
 }
