@@ -1,68 +1,128 @@
-/*package kunaltest;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
-import javax.swing.SwingUtilities;
-
-// TODO: THIS CLASS ISNT USED RIGHT NOW
-public class QLearning {
-
-	Board b;
-	Square currentSquare;
-
-	public QLearning(Board b){
-		this.b = b;
-		this.currentSquare = b.currentSquare;
+public class QLearning{
+	
+	Board board;
+	public QLearning(Board board){
+		this.board = board;
 	}
+	
+	public boolean search(){
+		double bestWeight = board.grid[board.currentSquare.adjacent.get(0).x][board.currentSquare.adjacent.get(0).y].weight;
+		//System.out.println("current: " + bestWeight);
+		//if(board.previousActive != null) System.out.println("previous: " + board.previousActive.weight);
+		Square bestSquare = board.currentSquare.adjacent.get(0);
+		double stepSize = 0.1;
 
-	public void search(){
+		int r = -1;
 
-		int bestWeight = 0;
-		Square bestSquare = null;
+		Random rand = new Random();
 
-		Random r = new Random();
+		boolean greedy = true; // TODO: Based on some exploration probability we should determine this
 
-		while(true){
+		List<Square> duplicateWeight = new ArrayList<Square>();
+		
+		if(greedy){
+			//	while(true){
+			//System.out.println("Initial best weight: " + bestWeight);
 			// Check the nodes with the best weight
-			for(Map.Entry<Square, Integer> entry : currentSquare.adjacent.entrySet()){
-				if(entry.getValue() > bestWeight){
-					bestWeight = entry.getValue();
-					bestSquare = entry.getKey();
+			for(Square s : board.currentSquare.adjacent){
+				// We are going to keep track of the square with the best weight (and its value)
+				if(board.grid[s.x][s.y].weight > bestWeight){
+					bestWeight = board.grid[s.x][s.y].weight;
+					bestSquare = board.grid[s.x][s.y];
+					//System.out.println("The best weight is updated to " + bestWeight);
 				}
 			}
-
-			System.out.println(currentSquare.adjacent);
-			// Weights are all the same
-			if(bestWeight == 0){
-				List<Square> keys = new ArrayList<Square>(currentSquare.adjacent.keySet());
-				System.out.println(keys.size());
-				Square randomSquare = keys.get(r.nextInt(keys.size()));
-				bestSquare = randomSquare;
+		}else{
+			bestSquare = board.currentSquare.adjacent.get(rand.nextInt(board.currentSquare.adjacent.size()));
+		}
+		
+		// Now lets check to make sure that our best square didnt have the SAME weight as any other squares in the adjacency list
+		for(Square s : board.currentSquare.adjacent){
+			if(!s.equals(bestSquare) && board.grid[s.x][s.y].weight == bestWeight){
+				duplicateWeight.add(board.grid[s.x][s.y]);
 			}
-
-			// Now we know which square we are going to progress to
-			move(bestSquare);
-			if(bestWeight == 100) break;
-			bestWeight = 0;
-			//return;
+		}
+		
+		// If there were indeed duplicates, pick from them randomly
+		if(!duplicateWeight.isEmpty()) {
+			duplicateWeight.add(bestSquare);
+			bestSquare = duplicateWeight.get(rand.nextInt(duplicateWeight.size()));
+			bestWeight = board.grid[bestSquare.x][bestSquare.y].weight;
+			
 		}
 
-	}
+		//if()
 
+		// TODO: What about a case in which two weights are the same and NOT 0? Gotta account for this
+
+		// Weights are all the same
+	//	if (bestSquare == null) {
+
+			// TODO: What if adjacency list is empty?
+			//bestSquare = board.currentSquare.adjacent.get(rand.nextInt(board.currentSquare.adjacent.size()));
+
+		//}
+		// TODO: IF PREVIOUS ACTIVE IS NULL?
+
+	/*	if(board.previousActive != null){ // If we have made our first move
+			
+			// Basically this is just a complicated way of adding a weight to a square that was just occupied
+			for (Square adjacent : board.previousActive.adjacent) {
+				if (adjacent.x == board.currentSquare.x && adjacent.y == board.currentSquare.y) {
+					//if (board.grid[board.currentSquare.x][board.currentSquare.y].c != Color.PINK){
+						System.out.println();
+
+						System.out.println("Previous active: " + board.previousActive);
+
+						System.out.println("Setting pink to: " + board.currentSquare.x + ", " + board.currentSquare.y);
+
+						// TODO: Ill work on simplifying this, basically just setting the weight of the previous square using algorithm
+						double currentWeight = board.grid[board.currentSquare.x][board.currentSquare.y].weight;
+						System.out.println(board.currentSquare.adjacent);
+						board.grid[board.currentSquare.x][board.currentSquare.y].weight = currentWeight + (stepSize * (r + (bestWeight - currentWeight))); 
+						System.out.println("current: " + bestWeight);
+						if(board.previousActive != null) System.out.println("previous: " + board.previousActive.weight);
+						//board.grid[board.currentSquare.x][board.currentSquare.y].setColor(Color.PINK);
+					//}
+				}
+			}	
+		}else{
+			double currentWeight = board.grid[board.currentSquare.x][board.currentSquare.y].weight;
+			board.grid[board.currentSquare.x][board.currentSquare.y].weight = currentWeight + (stepSize * (r + (bestWeight - currentWeight)));
+		}*/
+		double currentWeight = board.grid[board.currentSquare.x][board.currentSquare.y].weight;
+
+		
+		System.out.println("We are at: " + board.currentSquare);
+		System.out.println("We want to get to: " + bestSquare + " with weight of: " + board.grid[bestSquare.x][bestSquare.y].weight);
+		System.out.println(board.currentSquare.adjacent);
+		System.out.println("Current weight: " + currentWeight + " Best Weight: " + board.grid[bestSquare.x][bestSquare.y].weight);
+		System.out.println("Assigning this weight to current square: " + ( currentWeight + (stepSize * (r + (board.grid[bestSquare.x][bestSquare.y].weight - currentWeight)))));
+	//	System.out.println("currentSquare: " + board.currentSquare.weight + " actual: " + board.grid[board.currentSquare.x][board.currentSquare.y].weight);
+		System.out.println();
+		
+		board.grid[board.currentSquare.x][board.currentSquare.y].weight = currentWeight + (stepSize * (r + (board.grid[bestSquare.x][bestSquare.y].weight - currentWeight))); 
+
+		if (bestWeight == 100) {
+			return true;
+		}
+
+		// Now we know which square we are going to progress to
+		move(bestSquare);
+		//main.repaint();
+
+		return false;
+	}
+	
 	private void move(Square s){
 
-		// This way we can actually see it move (may change this implementation later)
-		try {
-			Thread.sleep(300);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		// Change the active square to the one we want to move to
+		board.changeActive(s);
+		//this.currentSquare = board.currentSquare;
 
-		b.changeActive(s);
-		this.currentSquare = b.currentSquare;
 	}
-}*/
+}
