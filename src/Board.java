@@ -73,7 +73,7 @@ public class Board extends JPanel{
 					grid[i][j].drawCircle(g);
 				}
 				
-				grid[i][j].drawWeight(g);
+			//	grid[i][j].drawWeight(g);
 			}
 		}
 	}
