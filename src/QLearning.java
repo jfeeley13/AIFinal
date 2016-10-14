@@ -12,50 +12,58 @@ public class QLearning{
 	int numGoals = 0;
 	
 	List<Double> cumulativeRewards = new ArrayList<Double>();
+	
 	public QLearning(Board board){
 		this.board = board;
 		this.cumulativeReward = 0;
 		this.stepSize = 0.1;
 	}
 	
+	// Run the algorithm until we find the goal 50 times. Record data
 	public void search(){
 		
-		while(numGoals < 30){
+		while(numGoals < 50){
 			if(iteration() == true) {
 				numGoals++;
 				System.out.println("Completed maze " + numGoals + " times");
 				System.out.println("Cumulative reward is: " + cumulativeReward);
 				cumulativeRewards.add(cumulativeReward);
 				cumulativeReward = 0;
-			}
-			
-		}
-		
+			}	
+		}	
 	}
 	
 	public boolean iteration(){
-		double bestWeight = board.grid[board.currentSquare.adjacent.get(0).x][board.currentSquare.adjacent.get(0).y].weight;
-		//System.out.println("current: " + bestWeight);
-		//if(board.previousActive != null) System.out.println("previous: " + board.previousActive.weight);
-		Square bestSquare = board.currentSquare.adjacent.get(0);
+		
+		// If we are using greedy approach, this is the square (and its respective weight) we want to move to
+		double bestWeight = 0;
+		Square bestSquare = null;
 
-
+		// If we are using a random approach we will just pick a random adjacent square to move to
 		Random rand = new Random();
 
 		boolean greedy = true; // TODO: Based on some exploration probability we should determine this
 
-		List<Square> duplicateWeight = new ArrayList<Square>();
+		List<Square> duplicateWeight = new ArrayList<Square>(); // If we have multiple squares with the same weight we need to pick one at random
 		
 		if(greedy){
-			//	while(true){
-			//System.out.println("Initial best weight: " + bestWeight);
-			// Check the nodes with the best weight
+			
+			
+			boolean firstLoop = true;
 			for(Square s : board.currentSquare.adjacent){
+				
+				// This will be our starting point for comparison 
+				if(firstLoop){
+					bestWeight = board.grid[s.x][s.y].weight;
+					bestSquare = board.grid[s.x][s.y];
+					firstLoop = false;
+					continue;
+				}
+				
 				// We are going to keep track of the square with the best weight (and its value)
 				if(board.grid[s.x][s.y].weight > bestWeight){
 					bestWeight = board.grid[s.x][s.y].weight;
 					bestSquare = board.grid[s.x][s.y];
-					//System.out.println("The best weight is updated to " + bestWeight);
 				}
 			}
 		}else{
@@ -77,67 +85,30 @@ public class QLearning{
 			
 		}
 
-		//if()
-
-		// TODO: What about a case in which two weights are the same and NOT 0? Gotta account for this
-
-		// Weights are all the same
-	//	if (bestSquare == null) {
-
-			// TODO: What if adjacency list is empty?
-			//bestSquare = board.currentSquare.adjacent.get(rand.nextInt(board.currentSquare.adjacent.size()));
-
-		//}
-		// TODO: IF PREVIOUS ACTIVE IS NULL?
-
-	/*	if(board.previousActive != null){ // If we have made our first move
-			
-			// Basically this is just a complicated way of adding a weight to a square that was just occupied
-			for (Square adjacent : board.previousActive.adjacent) {
-				if (adjacent.x == board.currentSquare.x && adjacent.y == board.currentSquare.y) {
-					//if (board.grid[board.currentSquare.x][board.currentSquare.y].c != Color.PINK){
-						System.out.println();
-
-						System.out.println("Previous active: " + board.previousActive);
-
-						System.out.println("Setting pink to: " + board.currentSquare.x + ", " + board.currentSquare.y);
-
-						// TODO: Ill work on simplifying this, basically just setting the weight of the previous square using algorithm
-						double currentWeight = board.grid[board.currentSquare.x][board.currentSquare.y].weight;
-						System.out.println(board.currentSquare.adjacent);
-						board.grid[board.currentSquare.x][board.currentSquare.y].weight = currentWeight + (stepSize * (r + (bestWeight - currentWeight))); 
-						System.out.println("current: " + bestWeight);
-						if(board.previousActive != null) System.out.println("previous: " + board.previousActive.weight);
-						//board.grid[board.currentSquare.x][board.currentSquare.y].setColor(Color.PINK);
-					//}
-				}
-			}	
-		}else{
-			double currentWeight = board.grid[board.currentSquare.x][board.currentSquare.y].weight;
-			board.grid[board.currentSquare.x][board.currentSquare.y].weight = currentWeight + (stepSize * (r + (bestWeight - currentWeight)));
-		}*/
+		// Now we are going to use the weight of the current square and the weight of the square we want to go to to compute the NEW weight of the current square
 		double currentWeight = board.grid[board.currentSquare.x][board.currentSquare.y].weight;
 
-		
+		// Yay debugging
 		System.out.println("We are at: " + board.currentSquare);
 		System.out.println("We want to get to: " + bestSquare + " with weight of: " + board.grid[bestSquare.x][bestSquare.y].weight);
 		System.out.println(board.currentSquare.adjacent);
 		System.out.println("Current weight: " + currentWeight + " Best Weight: " + board.grid[bestSquare.x][bestSquare.y].weight);
 		System.out.println("Assigning this weight to current square: " + ( currentWeight + (stepSize * (R + (board.grid[bestSquare.x][bestSquare.y].weight - currentWeight)))));
-	//	System.out.println("currentSquare: " + board.currentSquare.weight + " actual: " + board.grid[board.currentSquare.x][board.currentSquare.y].weight);
 		System.out.println();
 		
+		// This is sorta messy, look at google doc for this formula. Basically settings weight of current square to formula output
 		board.grid[board.currentSquare.x][board.currentSquare.y].weight = currentWeight + (stepSize * (R + (board.grid[bestSquare.x][bestSquare.y].weight - currentWeight))); 
 		
+		// Until we reach the goal lets see what are cumulative reward is (we want to maximize this and minimize the number of times needed to get to the goal)
 		cumulativeReward += board.grid[board.currentSquare.x][board.currentSquare.y].weight;
 		
+		// Cool we are at the goal, return
 		if (bestWeight == 100) {
 			return true;
 		}
 
-		// Now we know which square we are going to progress to
+		// We aren't at the goal, lets move to the next square and keep looking
 		move(bestSquare);
-		//main.repaint();
 
 		return false;
 	}
@@ -146,7 +117,6 @@ public class QLearning{
 
 		// Change the active square to the one we want to move to
 		board.changeActive(s);
-		//this.currentSquare = board.currentSquare;
 
 	}
 }

@@ -4,6 +4,10 @@ import java.awt.Point;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+/*
+ * Represents a grid of squares and keeps track of a current square and previous square
+ * Don't need to worry about this code too much
+ */
 public class Board extends JPanel{
 
 	int width;

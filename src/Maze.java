@@ -17,11 +17,12 @@ import javax.swing.Timer;
 import javax.swing.WindowConstants;
 
 public class Maze implements MouseListener, ActionListener {
-	//	Square[][] grid;
+
+	// Important stuff
 	private int width, height;
 	private Board board;
 
-
+	// Graphics stuff (can be ignored)
 	private JFrame main;
 
 	private JButton instantaneousSearch;
@@ -30,19 +31,20 @@ public class Maze implements MouseListener, ActionListener {
 	private JButton endGame;
 	private JButton restart;
 
+	// More important stuff. Start point is the coordinate of the start square for the maze
 	private Point start;
-	//	private Point finish;
 
-	//	boolean goal = false;
+	// Not using this currently, it is for the delayed search if we actually want to see what is happening
 	private Timer t = null;
 
+	// Algorithm stuffs
 	QLearning algorithm;
 	
+	// If the search is currently in progress we dont want the user to be able to use buttons
 	private boolean inProgress = false;
-
+	
 	public Maze(int width, int height, Point start, Point finish) {
 		this.start = start;
-		//		this.finish = finish;
 
 		this.width = width;
 		this.height = height;
@@ -92,15 +94,19 @@ public class Maze implements MouseListener, ActionListener {
 	}
 
 	// Initialize and start a timer
+	// NOTE: DONT USE THIS TYPE OF SEARCH ANYMORE
 	private void delayedSearch(int delay) {
 		t = new Timer(delay, this);
 		t.start();
 	}
 
+	// Triggered by the Instantaneous search buttons, should always do this type of search unless debugging
 	private void noDelaySearch() {
-		// TODO explain the "while"
+		
+		// The search function in algorithm will find the goal 50 times, accumulating data each time (can be configured)
 		algorithm.search();
 		
+		// After we are done searching we can print out the results (cumulative reward based on which trial it is on)
 		PrintWriter writer = null;
 		try {
 			 writer = new PrintWriter("results.csv");
@@ -109,120 +115,14 @@ public class Maze implements MouseListener, ActionListener {
 			e.printStackTrace();
 		}
 		
-		writer.println("Cumulative reward,# Mazes Completed");
+		writer.println("# Mazes Completed,Cumulative reward");
 		
 		for(int i = 0; i < algorithm.cumulativeRewards.size(); i++){
-			writer.println(algorithm.cumulativeRewards.get(i) + "," + (i+1));
+			writer.println((i+1) + "," + algorithm.cumulativeRewards.get(i));
 		}
 		
 		writer.close();
 	}
-
-//	// TODO: Maybe make this a static method in some QLearning class
-//	/*private boolean search() {
-//		double bestWeight = board.grid[board.currentSquare.adjacent.get(0).x][board.currentSquare.adjacent.get(0).y].weight;
-//		//System.out.println("current: " + bestWeight);
-//		//if(board.previousActive != null) System.out.println("previous: " + board.previousActive.weight);
-//		Square bestSquare = board.currentSquare.adjacent.get(0);
-//		double stepSize = 0.1;
-//
-//		int r = -1;
-//
-//		Random rand = new Random();
-//
-//		boolean greedy = true; // TODO: Based on some exploration probability we should determine this
-//
-//		List<Square> duplicateWeight = new ArrayList<Square>();
-//		
-//		if(greedy){
-//			//	while(true){
-//			System.out.println("Initial best weight: " + bestWeight);
-//			// Check the nodes with the best weight
-//			for(Square s : board.currentSquare.adjacent){
-//				// We are going to keep track of the square with the best weight (and its value)
-//				if(board.grid[s.x][s.y].weight > bestWeight){
-//					bestWeight = board.grid[s.x][s.y].weight;
-//					bestSquare = board.grid[s.x][s.y];
-//					System.out.println("The best weight is updated to " + bestWeight);
-//				}else if(board.grid[s.x][s.y].weight == bestWeight){
-//					//duplicateWeight.add(e)
-//					// TODO: IMPLEMENT THIS TO FIX THINGS THAT ARE BROKEN CURRENTLY
-//					duplicateWeight.add(board.grid[s.x][s.y]);
-//				}
-//			}
-//		}else{
-//			bestSquare = board.currentSquare.adjacent.get(rand.nextInt(board.currentSquare.adjacent.size()));
-//		}
-//		
-//		//if()
-//
-//		// TODO: What about a case in which two weights are the same and NOT 0? Gotta account for this
-//
-//		// Weights are all the same
-//	//	if (bestSquare == null) {
-//
-//			// TODO: What if adjacency list is empty?
-//			//bestSquare = board.currentSquare.adjacent.get(rand.nextInt(board.currentSquare.adjacent.size()));
-//
-//		//}
-//		// TODO: IF PREVIOUS ACTIVE IS NULL?
-//
-//	/*	if(board.previousActive != null){ // If we have made our first move
-//			
-//			// Basically this is just a complicated way of adding a weight to a square that was just occupied
-//			for (Square adjacent : board.previousActive.adjacent) {
-//				if (adjacent.x == board.currentSquare.x && adjacent.y == board.currentSquare.y) {
-//					//if (board.grid[board.currentSquare.x][board.currentSquare.y].c != Color.PINK){
-//						System.out.println();
-//
-//						System.out.println("Previous active: " + board.previousActive);
-//
-//						System.out.println("Setting pink to: " + board.currentSquare.x + ", " + board.currentSquare.y);
-//
-//						// TODO: Ill work on simplifying this, basically just setting the weight of the previous square using algorithm
-//						double currentWeight = board.grid[board.currentSquare.x][board.currentSquare.y].weight;
-//						System.out.println(board.currentSquare.adjacent);
-//						board.grid[board.currentSquare.x][board.currentSquare.y].weight = currentWeight + (stepSize * (r + (bestWeight - currentWeight))); 
-//						System.out.println("current: " + bestWeight);
-//						if(board.previousActive != null) System.out.println("previous: " + board.previousActive.weight);
-//						//board.grid[board.currentSquare.x][board.currentSquare.y].setColor(Color.PINK);
-//					//}
-//				}
-//			}	
-//		}else{
-//			double currentWeight = board.grid[board.currentSquare.x][board.currentSquare.y].weight;
-//			board.grid[board.currentSquare.x][board.currentSquare.y].weight = currentWeight + (stepSize * (r + (bestWeight - currentWeight)));
-//		}*/
-//		double currentWeight = board.grid[board.currentSquare.x][board.currentSquare.y].weight;
-//
-//		
-//		System.out.println("We are at: " + board.currentSquare);
-//		System.out.println("We want to get to: " + bestSquare + " with weight of: " + board.grid[bestSquare.x][bestSquare.y].weight);
-//		System.out.println(board.currentSquare.adjacent);
-//		System.out.println("Assigning this weight to current square: " + ( currentWeight + (stepSize * (r + (board.grid[bestSquare.x][bestSquare.y].weight - currentWeight)))));
-//		System.out.println("currentSquare: " + board.currentSquare.weight + " actual: " + board.grid[board.currentSquare.x][board.currentSquare.y].weight);
-//		System.out.println();
-//		
-//		board.grid[board.currentSquare.x][board.currentSquare.y].weight = currentWeight + (stepSize * (r + (board.grid[bestSquare.x][bestSquare.y].weight - currentWeight))); 
-//
-//		if (bestWeight == 100) {
-//			return true;
-//		}
-//
-//		// Now we know which square we are going to progress to
-//		move(bestSquare);
-//		main.repaint();
-//
-//		return false;
-//	}
-//
-//	private void move(Square s){
-//
-//		// Change the active square to the one we want to move to
-//		board.changeActive(s);
-//		//this.currentSquare = board.currentSquare;
-//
-//	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
