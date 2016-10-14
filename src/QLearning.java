@@ -5,18 +5,40 @@ import java.util.Random;
 public class QLearning{
 	
 	Board board;
+	double cumulativeReward;
+	final int R = -1;
+	double stepSize;
+	
+	int numGoals = 0;
+	
+	List<Double> cumulativeRewards = new ArrayList<Double>();
 	public QLearning(Board board){
 		this.board = board;
+		this.cumulativeReward = 0;
+		this.stepSize = 0.1;
 	}
 	
-	public boolean search(){
+	public void search(){
+		
+		while(numGoals < 30){
+			if(iteration() == true) {
+				numGoals++;
+				System.out.println("Completed maze " + numGoals + " times");
+				System.out.println("Cumulative reward is: " + cumulativeReward);
+				cumulativeRewards.add(cumulativeReward);
+				cumulativeReward = 0;
+			}
+			
+		}
+		
+	}
+	
+	public boolean iteration(){
 		double bestWeight = board.grid[board.currentSquare.adjacent.get(0).x][board.currentSquare.adjacent.get(0).y].weight;
 		//System.out.println("current: " + bestWeight);
 		//if(board.previousActive != null) System.out.println("previous: " + board.previousActive.weight);
 		Square bestSquare = board.currentSquare.adjacent.get(0);
-		double stepSize = 0.1;
 
-		int r = -1;
 
 		Random rand = new Random();
 
@@ -101,12 +123,14 @@ public class QLearning{
 		System.out.println("We want to get to: " + bestSquare + " with weight of: " + board.grid[bestSquare.x][bestSquare.y].weight);
 		System.out.println(board.currentSquare.adjacent);
 		System.out.println("Current weight: " + currentWeight + " Best Weight: " + board.grid[bestSquare.x][bestSquare.y].weight);
-		System.out.println("Assigning this weight to current square: " + ( currentWeight + (stepSize * (r + (board.grid[bestSquare.x][bestSquare.y].weight - currentWeight)))));
+		System.out.println("Assigning this weight to current square: " + ( currentWeight + (stepSize * (R + (board.grid[bestSquare.x][bestSquare.y].weight - currentWeight)))));
 	//	System.out.println("currentSquare: " + board.currentSquare.weight + " actual: " + board.grid[board.currentSquare.x][board.currentSquare.y].weight);
 		System.out.println();
 		
-		board.grid[board.currentSquare.x][board.currentSquare.y].weight = currentWeight + (stepSize * (r + (board.grid[bestSquare.x][bestSquare.y].weight - currentWeight))); 
-
+		board.grid[board.currentSquare.x][board.currentSquare.y].weight = currentWeight + (stepSize * (R + (board.grid[bestSquare.x][bestSquare.y].weight - currentWeight))); 
+		
+		cumulativeReward += board.grid[board.currentSquare.x][board.currentSquare.y].weight;
+		
 		if (bestWeight == 100) {
 			return true;
 		}

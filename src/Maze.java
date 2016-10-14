@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -97,7 +99,23 @@ public class Maze implements MouseListener, ActionListener {
 
 	private void noDelaySearch() {
 		// TODO explain the "while"
-		while(!algorithm.search()){} // Just keep going until we reach the goal
+		algorithm.search();
+		
+		PrintWriter writer = null;
+		try {
+			 writer = new PrintWriter("results.csv");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		writer.println("Cumulative reward,# Mazes Completed");
+		
+		for(int i = 0; i < algorithm.cumulativeRewards.size(); i++){
+			writer.println(algorithm.cumulativeRewards.get(i) + "," + (i+1));
+		}
+		
+		writer.close();
 	}
 
 //	// TODO: Maybe make this a static method in some QLearning class
@@ -295,7 +313,7 @@ public class Maze implements MouseListener, ActionListener {
 
 		// On each timer tick perform a move, unless we have reached the goal
 		if(e.getSource() == t){
-			if(algorithm.search()) t.stop();
+			if(algorithm.iteration()) t.stop();
 		}
 	}
 }
