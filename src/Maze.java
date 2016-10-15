@@ -119,19 +119,19 @@ public class Maze implements MouseListener, ActionListener {
 		// After we are done searching we can print out the results (cumulative reward based on which trial it is on)
 		PrintWriter writer = null;
 		try {
-			writer = new PrintWriter(width + "x" + height + "-" + algorithm.stepSize + ".csv");
+			writer = new PrintWriter(width + "x" + height + "-" + algorithm.stepSize + "-visited" + ".csv");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		/*	writer.println("# Mazes Completed,Cumulative reward");
+		writer.println("# Mazes Completed,Visited Squares");
 
 		for(int i = 0; i < algorithm.cumulativeRewards.size(); i++){
-			writer.println((i+1) + "," + algorithm.cumulativeRewards.get(i));
+			writer.println((i+1) + "," + algorithm.visitedList.get(i));
 		}
 
-		System.out.println("TOTAL TIME: " + algorithm.totalTime);*/
+		System.out.println("TOTAL TIME: " + algorithm.totalTime);
 
 		writer.close();
 	}

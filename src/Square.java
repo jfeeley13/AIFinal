@@ -2,7 +2,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-class Square {
+public class Square {
 	int x, y;
 	//int SIZE = 30; // TODO: Change this hardcoded stuff
 	Color c;
