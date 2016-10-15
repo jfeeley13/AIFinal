@@ -10,7 +10,7 @@ public class QLearning{
 	double cumulativeReward = 0;
 	final double R = -1.0;
 	double stepSize = 0.1;
-	double exploration = 0.1;
+	double exploration = 0.0;
 
 	int numGoals = 0;
 	
@@ -36,9 +36,19 @@ public class QLearning{
 		
 		long startTime = System.currentTimeMillis();
 
-		while(numGoals < 1000){
+		while(numGoals < 200){
+			
+			
 			
 			if(iteration()) {
+				
+				if(numGoals == 99 && board.grid[9][0].end == true){
+					board.grid[9][0].end = false;
+					board.grid[9][0].weight = 0;
+					board.grid[0][9].setEnd();
+					System.out.println("CHANGING END");
+				}
+				
 				long endTime = System.currentTimeMillis();
 				long total = endTime - startTime;
 				

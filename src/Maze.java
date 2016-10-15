@@ -111,26 +111,26 @@ public class Maze implements MouseListener, ActionListener {
 		//board.setReward(50, 249, 0);
 		//board.setReward(50, 0, 249);
 		//board.setReward(50, 50, 50);
-		board.setReward(50, 0, 19);
-		board.setReward(50, 19, 0);
+		//board.setReward(50, 0, 19);
+		//board.setReward(50, 19, 0);
 		
-		board.grid[0][18].weight = -50;
-		board.grid[1][18].weight = -50;
-		board.grid[1][19].weight = -50;
-		board.grid[0][17].weight = -50;
-		board.grid[1][17].weight = -50;
-		board.grid[2][17].weight = -50;
-		board.grid[2][18].weight = -50;
-		board.grid[2][19].weight = -50;
+		//board.grid[0][18].weight = -50;
+		//board.grid[1][18].weight = -50;
+		//board.grid[1][19].weight = -50;
+		//board.grid[0][17].weight = -50;
+		//board.grid[1][17].weight = -50;
+		//board.grid[2][17].weight = -50;
+		//board.grid[2][18].weight = -50;
+//		board.grid[2][19].weight = -50;
 
-		board.grid[18][0].weight = -50;
-		board.grid[18][1].weight = -50;
-		board.grid[19][1].weight = -50;
-		board.grid[17][0].weight = -50;
-		board.grid[17][1].weight = -50;
-		board.grid[17][2].weight = -50;
-		board.grid[18][2].weight = -50;
-		board.grid[19][2].weight = -50;
+		//board.grid[18][0].weight = -50;
+		//board.grid[18][1].weight = -50;
+		//board.grid[19][1].weight = -50;
+		//board.grid[17][0].weight = -50;
+		//board.grid[17][1].weight = -50;
+		//board.grid[17][2].weight = -50;
+		//board.grid[18][2].weight = -50;
+		////board.grid[19][2].weight = -50;
 		
 
 		// The search function in algorithm will find the goal 50 times, accumulating data each time (can be configured)
