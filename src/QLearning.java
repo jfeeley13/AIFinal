@@ -9,7 +9,7 @@ public class QLearning{
 	Board board;
 	double cumulativeReward = 0;
 	final double R = -1.0;
-	double stepSize = 0.5;
+	double stepSize = 0.01;
 	double exploration = 0.0;
 
 	int numGoals = 0;
