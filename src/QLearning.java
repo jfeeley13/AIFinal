@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -7,14 +8,17 @@ public class QLearning{
 	Board board;
 	double cumulativeReward = 0;
 	final int R = -1;
-	double stepSize = 0.5;
-	double exploration = 0.0;
+	double stepSize = 0.1;
+	double exploration = 0;
 	
 	int numGoals = 0;
 	
 	long totalTime;
 	
-	List<Long> cumulativeRewards = new ArrayList<Long>();
+	int visitedSquares = 0;
+	
+	List<Double> cumulativeRewards = new ArrayList<Double>();
+	List<Square> treasuresFound = new ArrayList<Square>(); //FOR EXPERIMENT 1
 	
 	public QLearning(Board board){
 		this.board = board;
@@ -27,7 +31,7 @@ public class QLearning{
 		
 		long startTime = System.currentTimeMillis();
 
-		while(numGoals < 1000){
+		while(numGoals < 10){
 			
 			if(iteration()) {
 				long endTime = System.currentTimeMillis();
@@ -39,16 +43,25 @@ public class QLearning{
 				
 				System.out.println("Completed maze " + numGoals + " times");
 				System.out.println("Cumulative reward is: " + cumulativeReward);
-				cumulativeRewards.add(total);
+				cumulativeRewards.add(cumulativeReward);
 				cumulativeReward = 0;
+				System.out.println("We visited: " + visitedSquares);
+				visitedSquares = 0;
 				
 				board.changeActive(new Square(0, 0));
 				board.previousActive = null;
 				
+				for(int i = 0; i < board.width; i++){
+					for(int j = 0; j < board.height; j++){
+						board.grid[i][j].setColor(null);
+					}
+				}
 				startTime = System.currentTimeMillis();
 			}	
 			
 		}
+		
+		System.out.println(treasuresFound);
 		
 		long totalEndTime = System.currentTimeMillis();
 		this.totalTime = totalEndTime - totalStartTime;
@@ -90,12 +103,14 @@ public class QLearning{
 					bestWeight = board.grid[s.x][s.y].weight;
 					bestSquare = board.grid[s.x][s.y];
 				}
+				
 			}
 		}else{
 			Square randomSquare = board.currentSquare.adjacent.get(rand.nextInt(board.currentSquare.adjacent.size()));
 			bestSquare = randomSquare;
 			bestWeight = board.grid[randomSquare.x][randomSquare.y].weight;
 		}
+		
 		
 		// Now lets check to make sure that our best square didnt have the SAME weight as any other squares in the adjacency list
 		for(Square s : board.currentSquare.adjacent){
@@ -108,10 +123,13 @@ public class QLearning{
 		if(!duplicateWeight.isEmpty()) {
 			duplicateWeight.add(bestSquare);
 			bestSquare = duplicateWeight.get(rand.nextInt(duplicateWeight.size()));
-			bestWeight = board.grid[bestSquare.x][bestSquare.y].weight;
-			
+			bestWeight = board.grid[bestSquare.x][bestSquare.y].weight;	
 		}
 
+		// FOR EXPERIMENT 1
+		if(bestWeight == 50){ // Oheylookwefoundatreasure
+			treasuresFound.add(bestSquare);
+		}
 		// Now we are going to use the weight of the current square and the weight of the square we want to go to to compute the NEW weight of the current square
 		double currentWeight = board.grid[board.currentSquare.x][board.currentSquare.y].weight;
 
@@ -129,6 +147,13 @@ public class QLearning{
 		// Until we reach the goal lets see what are cumulative reward is (we want to maximize this and minimize the number of times needed to get to the goal)
 		cumulativeReward += board.grid[board.currentSquare.x][board.currentSquare.y].weight;
 		
+		if(board.grid[board.currentSquare.x][board.currentSquare.y].c == null){
+			board.grid[board.currentSquare.x][board.currentSquare.y].setColor(Color.PINK);
+			visitedSquares++;
+			
+
+		}
+				
 		// Cool we are at the goal, return
 		if (bestWeight == 100) {
 			return true;
