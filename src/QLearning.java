@@ -10,6 +10,7 @@ public class QLearning{
 	double cumulativeReward = 0;
 	final double R = -1.0;
 	double stepSize = 0.1;
+
 	double exploration = 0.0;
 
 	int numGoals = 0;
