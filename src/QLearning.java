@@ -5,11 +5,13 @@ import java.util.Random;
 
 public class QLearning{
 	
+
 	Board board;
 	double cumulativeReward = 0;
 	final int R = -1;
 	double stepSize = 0.1;
-	double exploration = 0;
+	double exploration = 0.0;
+
 	
 	int numGoals = 0;
 	
@@ -20,12 +22,12 @@ public class QLearning{
 	List<Double> cumulativeRewards = new ArrayList<Double>();
 	List<Square> treasuresFound = new ArrayList<Square>(); //FOR EXPERIMENT 1
 	
-	public QLearning(Board board){
+	QLearning(Board board){
 		this.board = board;
 	}
 	
 	// Run the algorithm until we find the goal 50 times. Record data
-	public void search(){
+	void search(){
 		
 		long totalStartTime = System.currentTimeMillis();
 		
@@ -68,7 +70,7 @@ public class QLearning{
 		
 	}
 	
-	public boolean iteration(){
+	boolean iteration(){
 		
 		// If we are using greedy approach, this is the square (and its respective weight) we want to move to
 		double bestWeight = 0;
@@ -80,6 +82,7 @@ public class QLearning{
 		boolean greedy = true; // TODO: Based on some exploration probability we should determine this
 		if(Math.random() < exploration){
 			greedy = false;
+			System.out.println("Exploring");
 		}
 		
 		List<Square> duplicateWeight = new ArrayList<Square>(); // If we have multiple squares with the same weight we need to pick one at random
@@ -130,9 +133,7 @@ public class QLearning{
 		if(bestWeight == 50){ // Oheylookwefoundatreasure
 			treasuresFound.add(bestSquare);
 		}
-		// Now we are going to use the weight of the current square and the weight of the square we want to go to to compute the NEW weight of the current square
-		double currentWeight = board.grid[board.currentSquare.x][board.currentSquare.y].weight;
-
+	
 		// Yay debugging
 	//	System.out.println("We are at: " + board.currentSquare);
 	//	System.out.println("We want to get to: " + bestSquare + " with weight of: " + board.grid[bestSquare.x][bestSquare.y].weight);
@@ -140,12 +141,17 @@ public class QLearning{
 		//System.out.println("Current weight: " + currentWeight + " Best Weight: " + board.grid[bestSquare.x][bestSquare.y].weight);
 	//	System.out.println("Assigning this weight to current square: " + ( currentWeight + (stepSize * (R + (board.grid[bestSquare.x][bestSquare.y].weight - currentWeight)))));
 	//	System.out.println();
-		
+
+		Square currentSquare = board.grid[board.currentSquare.x][board.currentSquare.y];
+		// Now we are going to use the weight of the current square and the weight of the square we want to go to to compute the NEW weight of the current square
+		double currentWeight = currentSquare.weight;
+
 		// This is sorta messy, look at google doc for this formula. Basically settings weight of current square to formula output
-		board.grid[board.currentSquare.x][board.currentSquare.y].weight = currentWeight + (stepSize * (R + (board.grid[bestSquare.x][bestSquare.y].weight - currentWeight))); 
-		
+		// TODO I get an error about "possible lossy conversion from double to int" here
+		currentSquare.weight = currentWeight + (stepSize * ((double)R + (board.grid[bestSquare.x][bestSquare.y].weight - currentWeight)));
+
 		// Until we reach the goal lets see what are cumulative reward is (we want to maximize this and minimize the number of times needed to get to the goal)
-		cumulativeReward += board.grid[board.currentSquare.x][board.currentSquare.y].weight;
+		cumulativeReward += currentSquare.weight;
 		
 		if(board.grid[board.currentSquare.x][board.currentSquare.y].c == null){
 			board.grid[board.currentSquare.x][board.currentSquare.y].setColor(Color.PINK);
