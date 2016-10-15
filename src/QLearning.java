@@ -5,32 +5,54 @@ import java.util.Random;
 public class QLearning{
 	
 	Board board;
-	double cumulativeReward;
+	double cumulativeReward = 0;
 	final int R = -1;
-	double stepSize;
+	double stepSize = 0.5;
+	double exploration = 0.0;
 	
 	int numGoals = 0;
 	
-	List<Double> cumulativeRewards = new ArrayList<Double>();
+	long totalTime;
+	
+	List<Long> cumulativeRewards = new ArrayList<Long>();
 	
 	public QLearning(Board board){
 		this.board = board;
-		this.cumulativeReward = 0;
-		this.stepSize = 0.1;
 	}
 	
 	// Run the algorithm until we find the goal 50 times. Record data
 	public void search(){
 		
-		while(numGoals < 50){
-			if(iteration() == true) {
+		long totalStartTime = System.currentTimeMillis();
+		
+		long startTime = System.currentTimeMillis();
+
+		while(numGoals < 1000){
+			
+			if(iteration()) {
+				long endTime = System.currentTimeMillis();
+				long total = endTime - startTime;
+				
 				numGoals++;
+
+				System.out.println("Time for goal: " + numGoals + " is " + total);
+				
 				System.out.println("Completed maze " + numGoals + " times");
 				System.out.println("Cumulative reward is: " + cumulativeReward);
-				cumulativeRewards.add(cumulativeReward);
+				cumulativeRewards.add(total);
 				cumulativeReward = 0;
+				
+				board.changeActive(new Square(0, 0));
+				board.previousActive = null;
+				
+				startTime = System.currentTimeMillis();
 			}	
-		}	
+			
+		}
+		
+		long totalEndTime = System.currentTimeMillis();
+		this.totalTime = totalEndTime - totalStartTime;
+		
 	}
 	
 	public boolean iteration(){
@@ -43,7 +65,10 @@ public class QLearning{
 		Random rand = new Random();
 
 		boolean greedy = true; // TODO: Based on some exploration probability we should determine this
-
+		if(Math.random() < exploration){
+			greedy = false;
+		}
+		
 		List<Square> duplicateWeight = new ArrayList<Square>(); // If we have multiple squares with the same weight we need to pick one at random
 		
 		if(greedy){
@@ -67,7 +92,9 @@ public class QLearning{
 				}
 			}
 		}else{
-			bestSquare = board.currentSquare.adjacent.get(rand.nextInt(board.currentSquare.adjacent.size()));
+			Square randomSquare = board.currentSquare.adjacent.get(rand.nextInt(board.currentSquare.adjacent.size()));
+			bestSquare = randomSquare;
+			bestWeight = board.grid[randomSquare.x][randomSquare.y].weight;
 		}
 		
 		// Now lets check to make sure that our best square didnt have the SAME weight as any other squares in the adjacency list
@@ -89,12 +116,12 @@ public class QLearning{
 		double currentWeight = board.grid[board.currentSquare.x][board.currentSquare.y].weight;
 
 		// Yay debugging
-		System.out.println("We are at: " + board.currentSquare);
-		System.out.println("We want to get to: " + bestSquare + " with weight of: " + board.grid[bestSquare.x][bestSquare.y].weight);
-		System.out.println(board.currentSquare.adjacent);
-		System.out.println("Current weight: " + currentWeight + " Best Weight: " + board.grid[bestSquare.x][bestSquare.y].weight);
-		System.out.println("Assigning this weight to current square: " + ( currentWeight + (stepSize * (R + (board.grid[bestSquare.x][bestSquare.y].weight - currentWeight)))));
-		System.out.println();
+	//	System.out.println("We are at: " + board.currentSquare);
+	//	System.out.println("We want to get to: " + bestSquare + " with weight of: " + board.grid[bestSquare.x][bestSquare.y].weight);
+	//	System.out.println(board.currentSquare.adjacent);
+		//System.out.println("Current weight: " + currentWeight + " Best Weight: " + board.grid[bestSquare.x][bestSquare.y].weight);
+	//	System.out.println("Assigning this weight to current square: " + ( currentWeight + (stepSize * (R + (board.grid[bestSquare.x][bestSquare.y].weight - currentWeight)))));
+	//	System.out.println();
 		
 		// This is sorta messy, look at google doc for this formula. Basically settings weight of current square to formula output
 		board.grid[board.currentSquare.x][board.currentSquare.y].weight = currentWeight + (stepSize * (R + (board.grid[bestSquare.x][bestSquare.y].weight - currentWeight))); 

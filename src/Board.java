@@ -1,6 +1,8 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.util.Random;
+
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -100,5 +102,9 @@ public class Board extends JPanel{
 				}
 			}
 		}
+	}
+	
+	public void setReward(double reward, int x, int y){		
+		grid[x][y].weight = reward;
 	}
 }

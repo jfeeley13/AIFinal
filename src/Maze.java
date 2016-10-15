@@ -103,13 +103,18 @@ public class Maze implements MouseListener, ActionListener {
 	// Triggered by the Instantaneous search buttons, should always do this type of search unless debugging
 	private void noDelaySearch() {
 		
+		// FOR EXPERIMENT 1 -- SET UP SOME GOALS AND SEE HOW OFTEN WE FIND THEM
+		//board.setReward(50, 0, 19); // Putting them in corners and one in the middle of the board
+		//board.setReward(50, 19, 0);
+		//board.setReward(50, 10, 10);
+		
 		// The search function in algorithm will find the goal 50 times, accumulating data each time (can be configured)
 		algorithm.search();
 		
 		// After we are done searching we can print out the results (cumulative reward based on which trial it is on)
 		PrintWriter writer = null;
 		try {
-			 writer = new PrintWriter("results.csv");
+			 writer = new PrintWriter(width + "x" + height + "-" + algorithm.stepSize + ".csv");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -120,6 +125,8 @@ public class Maze implements MouseListener, ActionListener {
 		for(int i = 0; i < algorithm.cumulativeRewards.size(); i++){
 			writer.println((i+1) + "," + algorithm.cumulativeRewards.get(i));
 		}
+		
+		System.out.println("TOTAL TIME: " + algorithm.totalTime);
 		
 		writer.close();
 	}
