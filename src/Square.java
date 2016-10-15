@@ -15,6 +15,7 @@ public class Square {
 	boolean end = false;
 	boolean start = false;
 	boolean active = false;
+	boolean reward = false;
 	
 	Square(int x, int y) {
 		this.x = x;

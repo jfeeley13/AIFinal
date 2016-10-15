@@ -9,14 +9,17 @@ public class QLearning{
 	Board board;
 	double cumulativeReward = 0;
 	final double R = -1.0;
-	double stepSize = 0.3;
-	double exploration = 0.0;
+	double stepSize = 0.1;
+	double exploration = 0.1;
 
 	int numGoals = 0;
 	
 	long totalTime;
 	
 	int visitedSquares = 0;
+	
+	int treasure1 = 0;
+	int treasure2 = 0;
 	
 	List<Double> cumulativeRewards = new ArrayList<Double>();
 	List<Square> treasuresFound = new ArrayList<Square>(); //FOR EXPERIMENT 1
@@ -41,16 +44,17 @@ public class QLearning{
 				
 				numGoals++;
 
-				System.out.println("Time for goal: " + numGoals + " is " + total);
+				//System.out.println("Time for goal: " + numGoals + " is " + total);
 				
 				System.out.println("Completed maze " + numGoals + " times");
-				System.out.println("Cumulative reward is: " + cumulativeReward);
+				//System.out.println("Cumulative reward is: " + cumulativeReward);
 				cumulativeRewards.add(cumulativeReward);
 				cumulativeReward = 0;
 				System.out.println("We visited: " + visitedSquares);
 				visitedList.add(visitedSquares);
 				visitedSquares = 0;
 				
+				System.out.println();
 				board.changeActive(new Square(0, 0));
 				board.previousActive = null;
 				
@@ -64,7 +68,9 @@ public class QLearning{
 			
 		}
 		
-		System.out.println(treasuresFound);
+		System.out.println("Treasure at 0, 19 found: " + treasure1 + " times");
+		System.out.println("Treasure at 19, 0 found: " + treasure2 + " times");
+
 		
 		long totalEndTime = System.currentTimeMillis();
 		this.totalTime = totalEndTime - totalStartTime;
@@ -83,7 +89,7 @@ public class QLearning{
 		boolean greedy = true; // TODO: Based on some exploration probability we should determine this
 		if(Math.random() < exploration){
 			greedy = false;
-			System.out.println("Exploring");
+			//System.out.println("Exploring");
 		}
 		
 		List<Square> duplicateWeight = new ArrayList<Square>(); // If we have multiple squares with the same weight we need to pick one at random
@@ -131,8 +137,12 @@ public class QLearning{
 		}
 
 		// FOR EXPERIMENT 1
-		if(bestWeight == 50){ // Oheylookwefoundatreasure
-			treasuresFound.add(bestSquare);
+		if(board.grid[bestSquare.x][bestSquare.y].reward){ // Oheylookwefoundatreasure
+			System.out.println("Found treasure: " + bestSquare + " at trial " + (numGoals + 1));
+			
+			if(bestSquare.x == 0 && bestSquare.y == 19) treasure1++;
+			else treasure2++;
+			
 		}
 	
 		// Yay debugging
@@ -158,7 +168,7 @@ public class QLearning{
 		if(board.grid[board.currentSquare.x][board.currentSquare.y].c == null){
 			board.grid[board.currentSquare.x][board.currentSquare.y].setColor(Color.PINK);
 		}
-				
+		
 		// Cool we are at the goal, return
 		if (bestWeight == 100) {
 			return true;

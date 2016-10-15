@@ -63,14 +63,14 @@ public class Maze implements MouseListener, ActionListener {
 		main.setContentPane(board);
 
 		instantaneousSearch = new JButton("Instantaneous Search");
-		instantaneousSearch.setBounds(362, 11, 181, 23);
+		instantaneousSearch.setBounds(603, 11, 181, 23);
 		delayedSearch = new JButton("Delayed Search");
-		delayedSearch.setBounds(362, 45, 181, 23);
+		delayedSearch.setBounds(603, 45, 181, 23);
 		delay = new JTextField("20");
-		delay.setBounds(555, 46, 100, 20);
+		delay.setBounds(834, 46, 100, 20);
 		delay.setPreferredSize(new Dimension(100, 20));
 		endGame = new JButton("Pause");
-		endGame.setBounds(362, 79, 181, 23);
+		endGame.setBounds(603, 81, 181, 23);
 		board.setLayout(null);
 
 		board.add(instantaneousSearch);
@@ -80,7 +80,7 @@ public class Maze implements MouseListener, ActionListener {
 
 		restart = new JButton("Reset");
 		restart.addActionListener(this);
-		restart.setBounds(362, 113, 181, 23);
+		restart.setBounds(603, 115, 181, 23);
 		board.add(restart);
 
 		main.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -111,6 +111,27 @@ public class Maze implements MouseListener, ActionListener {
 		//board.setReward(50, 249, 0);
 		//board.setReward(50, 0, 249);
 		//board.setReward(50, 50, 50);
+		board.setReward(50, 0, 19);
+		board.setReward(50, 19, 0);
+		
+		board.grid[0][18].weight = -50;
+		board.grid[1][18].weight = -50;
+		board.grid[1][19].weight = -50;
+		board.grid[0][17].weight = -50;
+		board.grid[1][17].weight = -50;
+		board.grid[2][17].weight = -50;
+		board.grid[2][18].weight = -50;
+		board.grid[2][19].weight = -50;
+
+		board.grid[18][0].weight = -50;
+		board.grid[18][1].weight = -50;
+		board.grid[19][1].weight = -50;
+		board.grid[17][0].weight = -50;
+		board.grid[17][1].weight = -50;
+		board.grid[17][2].weight = -50;
+		board.grid[18][2].weight = -50;
+		board.grid[19][2].weight = -50;
+		
 
 		// The search function in algorithm will find the goal 50 times, accumulating data each time (can be configured)
 		algorithm.search();

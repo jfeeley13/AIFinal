@@ -79,7 +79,10 @@ public class Board extends JPanel{
 					grid[i][j].drawCircle(g);
 				}
 				
-				//grid[i][j].drawWeight(g);
+				if(grid[i][j].weight == 50){
+					grid[i][j].setColor(Color.YELLOW);
+					grid[i][j].drawSquare(g);
+				}
 			}
 		}
 	}
@@ -105,6 +108,6 @@ public class Board extends JPanel{
 	}
 	
 	public void setReward(double reward, int x, int y){		
-		grid[x][y].weight = reward;
+		grid[x][y].reward = true;
 	}
 }
