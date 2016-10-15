@@ -148,7 +148,8 @@ public class QLearning{
 
 		// This is sorta messy, look at google doc for this formula. Basically settings weight of current square to formula output
 		// TODO I get an error about "possible lossy conversion from double to int" here
-		currentSquare.weight = currentWeight + (stepSize * (R + (board.grid[bestSquare.x][bestSquare.y].weight - currentWeight)));
+		double newWeight = currentWeight + (stepSize * (R + (board.grid[bestSquare.x][bestSquare.y].weight - currentWeight)));
+		currentSquare.weight = newWeight;
 
 		// Until we reach the goal lets see what are cumulative reward is (we want to maximize this and minimize the number of times needed to get to the goal)
 		cumulativeReward += currentSquare.weight;
