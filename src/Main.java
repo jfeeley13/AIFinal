@@ -4,8 +4,8 @@ import java.io.PrintWriter;
 
 public class Main {
 	public static void main(String[] args){
-		int boardHeight = 10;
-		int boardWidth = 10;
+		int boardHeight = 20;
+		int boardWidth = 20;
 		
 		Maze m = new Maze(boardWidth, boardHeight, new Point(0, 0), new Point(boardWidth - 1, boardHeight - 1));
 

@@ -9,10 +9,9 @@ public class QLearning{
 	Board board;
 	double cumulativeReward = 0;
 	final double R = -1.0;
-	double stepSize = 0.1;
+	double stepSize = 0.5;
 	double exploration = 0.0;
 
-	
 	int numGoals = 0;
 	
 	long totalTime;
@@ -21,6 +20,7 @@ public class QLearning{
 	
 	List<Double> cumulativeRewards = new ArrayList<Double>();
 	List<Square> treasuresFound = new ArrayList<Square>(); //FOR EXPERIMENT 1
+	List<Integer> visitedList = new ArrayList<Integer>();
 	
 	QLearning(Board board){
 		this.board = board;
@@ -48,6 +48,7 @@ public class QLearning{
 				cumulativeRewards.add(cumulativeReward);
 				cumulativeReward = 0;
 				System.out.println("We visited: " + visitedSquares);
+				visitedList.add(visitedSquares);
 				visitedSquares = 0;
 				
 				board.changeActive(new Square(0, 0));
@@ -156,15 +157,14 @@ public class QLearning{
 		
 		if(board.grid[board.currentSquare.x][board.currentSquare.y].c == null){
 			board.grid[board.currentSquare.x][board.currentSquare.y].setColor(Color.PINK);
-			visitedSquares++;
-			
-
 		}
 				
 		// Cool we are at the goal, return
 		if (bestWeight == 100) {
 			return true;
 		}
+		
+		visitedSquares++;
 
 		// We aren't at the goal, lets move to the next square and keep looking
 		move(bestSquare);
